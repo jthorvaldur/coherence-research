@@ -132,9 +132,9 @@ def generate_dashboard(results_dir: Path, output_path: Path):
     total_var_alerts = 0
     total_coh_only = 0
     for bld_name, bld_data in exp7_buildings.items():
-        d_val = bld_data.get("global_delta", 0)
-        m_val = bld_data.get("global_M", 0)
-        w_val = bld_data.get("global_W", 0)
+        d_val = float(bld_data.get("global_delta", 0))
+        m_val = float(bld_data.get("global_M", 0))
+        w_val = float(bld_data.get("global_W", 0))
         n_coh = int(bld_data.get("n_coherence_alerts", 0))
         n_var = int(bld_data.get("n_variance_alerts", 0))
         coh_only = int(bld_data.get("coherence_only_alerts", 0))
