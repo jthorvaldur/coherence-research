@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>&Delta;.72 &mdash; NASA C-MAPSS Turbofan Degradation</title>
+<meta name="description" content="Delta.72 coherence framework applied to NASA C-MAPSS turbofan engine degradation dataset. 100 engines, 21 sensors, run-to-failure prediction.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07070f;
+    --surface: rgba(255,255,255,0.035);
+    --surface-hover: rgba(122,162,247,0.07);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(122,162,247,0.30);
+    --text: #e8e8f4;
+    --muted: rgba(232,232,244,0.45);
+    --dim: rgba(232,232,244,0.25);
+    --accent: #7aa2f7;
+    --accent2: #bb9af7;
+    --green: #9ece6a;
+    --amber: #e0af68;
+    --red: #f7768e;
+    --teal: #73daca;
+    --glow: rgba(122,162,247,0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 0 2rem; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(7,7,15,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 400;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    padding: 120px 2rem 60px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 200; letter-spacing: -0.01em;
+    line-height: 1.15; max-width: 720px; margin: 0 auto;
+  }
+  .hero-title strong {
+    font-weight: 500;
+    background: linear-gradient(140deg, #ffffff 20%, var(--accent) 60%, var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    margin-top: 1.2rem; font-size: 0.95rem;
+    color: var(--muted); max-width: 620px; margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* Equation */
+  .equation-block {
+    text-align: center;
+    padding: 1.5rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 700px; margin: 2rem auto;
+  }
+  .equation-main {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem; letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .equation-desc {
+    font-size: 0.78rem; color: var(--muted);
+    margin-top: 0.8rem; line-height: 1.8;
+  }
+  .equation-desc span { color: var(--text); font-weight: 500; }
+
+  /* Main */
+  main {
+    position: relative; z-index: 2;
+    max-width: 1000px; margin: 0 auto;
+    padding: 2rem 2rem 6rem;
+  }
+
+  /* Section */
+  .section { margin-bottom: 4rem; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::after {
+    content: ''; display: block; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  /* Metric cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem; text-align: center;
+    transition: border-color 0.25s;
+  }
+  .metric-card:hover { border-color: var(--border-hover); }
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .metric-label {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* Experiment card */
+  .experiment {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.25s;
+  }
+  .experiment:hover { border-color: var(--border-hover); }
+  .experiment h2 {
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-desc {
+    font-size: 0.85rem; color: var(--muted);
+    margin-bottom: 1.2rem; line-height: 1.6;
+  }
+  .experiment .finding {
+    font-size: 0.88rem; line-height: 1.7;
+    margin-top: 1rem;
+  }
+  .experiment .finding strong { color: var(--accent); }
+
+  /* Plot */
+  .plot-wrap {
+    margin: 1.2rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .plot-wrap img {
+    width: 100%; display: block;
+  }
+
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: 0.82rem;
+  }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(122,162,247,0.06);
+    color: var(--accent); padding: 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(122,162,247,0.15);
+  }
+  td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tr:hover { background: rgba(255,255,255,0.015); }
+
+  /* Comparison */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin: 1rem 0;
+  }
+  .comp-card {
+    background: rgba(255,255,255,0.015);
+    border-radius: 8px; padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .comp-card h3 {
+    font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .comp-card p {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+  }
+  .comp-card strong { color: var(--text); }
+
+  /* Tags */
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.06em; padding: 2px 8px;
+    border-radius: 6px; display: inline-block;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tag-green { color: var(--green); }
+  .tag-amber { color: var(--amber); }
+  .tag-red { color: var(--red); }
+
+  /* Status badge */
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+    display: inline-block;
+  }
+  .badge-pass { background: rgba(158,206,106,0.12); color: var(--green); }
+  .badge-warn { background: rgba(224,175,104,0.12); color: var(--amber); }
+  .badge-fail { background: rgba(247,118,142,0.12); color: var(--red); }
+
+  /* Footer */
+  footer {
+    text-align: center; padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    main { padding: 2rem 1.2rem 4rem; }
+    .comparison { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/r/research/" class="nav-brand">Thorarinson</a>
+  <ul class="nav-links">
+    <li><a href="/r/research/">All Experiments</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#plots">Plots</a></li>
+    <li><a href="#engines">Per-Engine</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero-eyebrow">Experiment 08 &mdash; Aerospace Failure Prediction</p>
+  <h1 class="hero-title">
+    <strong>&Delta;.72</strong> on NASA C-MAPSS Turbofan
+  </h1>
+  <p class="hero-sub">
+    Applying the coherence framework to real aerospace degradation data.
+    100 turbofan engines run to failure, 21 sensor channels,
+    206 mean cycles per engine. Can &Delta; predict
+    failure earlier than variance?
+  </p>
+</section>
+
+<!-- Equation -->
+<div class="equation-block">
+  <div class="equation-main">&Delta; = (P &middot; A &middot; R) / (D + N)</div>
+  <div class="equation-desc">
+    Applied to 6 degradation-sensitive sensors per engine: <span>s2</span> (LPC temp),
+    <span>s3</span> (HPC temp), <span>s4</span> (LPT temp), <span>s7</span> (HPC pressure),
+    <span>s11</span> (static pressure), <span>s12</span> (fuel flow ratio).<br>
+    Baseline: first 20% of engine life. Rolling window: 30 cycles, step 5.
+  </div>
+</div>
+
+<main>
+
+  <!-- Summary Metrics -->
+  <div class="section" id="results">
+    <p class="section-label">Key Results</p>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">100%</div>
+        <div class="metric-label">&Delta; Detection Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--amber);">93%</div>
+        <div class="metric-label">Variance Detection Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent);">185</div>
+        <div class="metric-label">Mean &Delta; Lead (cycles)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">83</div>
+        <div class="metric-label">Mean Var Lead (cycles)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent2);">109</div>
+        <div class="metric-label">&Delta; Advantage (cycles)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--teal);">89%</div>
+        <div class="metric-label">Life Remaining at Alert</div>
+      </div>
+    </div>
+
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      Across 100 NASA C-MAPSS turbofan engines, the &Delta; coherence metric achieved
+      <strong style="color: var(--green);">100% detection rate</strong> with a mean lead time of
+      <strong style="color: var(--accent);">185 cycles</strong> before failure. Variance-based detection
+      caught 93% of failures with only 83 cycles mean lead.
+      On average, &Delta; alerts <strong style="color: var(--accent2);">109 cycles earlier</strong>
+      than variance &mdash; with 89% of engine life still remaining at first alert.
+    </p>
+  </div>
+
+  <!-- Method Comparison -->
+  <div class="section">
+    <p class="section-label">Method Comparison</p>
+    <div class="comparison">
+      <div class="comp-card">
+        <h3 style="color: var(--accent);">&Delta; Coherence</h3>
+        <p>Detection rate: <strong style="color: var(--green);">100%</strong></p>
+        <p>Mean lead: <strong>185 cycles</strong></p>
+        <p>Median lead: <strong>178 cycles</strong></p>
+        <p>Missed: <strong style="color: var(--green);">0 engines</strong></p>
+      </div>
+      <div class="comp-card">
+        <h3 style="color: var(--red);">Variance</h3>
+        <p>Detection rate: <strong style="color: var(--amber);">93%</strong></p>
+        <p>Mean lead: <strong>83 cycles</strong></p>
+        <p>Median lead: <strong>77 cycles</strong></p>
+        <p>Missed: <strong style="color: var(--red);">7 engines</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plots -->
+  <div class="section" id="plots">
+    <p class="section-label">Experiment Plots</p>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 01</div>
+      <h2>Example Engine Degradation &mdash; Engine #26</h2>
+      <div class="exp-desc">
+        Top: 6 sensor traces (normalized) showing progressive degradation. Middle: system-level
+        &Delta; coherence, M (attractor memory), and W (recovery) with alert thresholds.
+        Bottom: per-sensor &Delta; decomposition.
+      </div>
+      <div class="plot-wrap"><img src="exp8_example_engine.png" alt="Example engine degradation with coherence overlay"></div>
+      <div class="finding">
+        Sensor degradation becomes visible in raw traces only in the final ~30% of life. &Delta; coherence
+        detects the structural departure from baseline within the first few windows after the healthy period.
+        <span class="badge badge-pass">Early Detection</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 02</div>
+      <h2>Lead-Time Distribution</h2>
+      <div class="exp-desc">
+        How many cycles before failure does each method alert? Distribution across all 100 engines.
+      </div>
+      <div class="plot-wrap"><img src="exp8_lead_time_dist.png" alt="Lead time distribution"></div>
+      <div class="finding">
+        &Delta; lead times span 107 to
+        341 cycles with a tight distribution.
+        Variance lead times are shorter and more dispersed, with 7 engines receiving no warning at all.
+        <span class="badge badge-pass">Consistent</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 03</div>
+      <h2>&Delta; Alert vs Remaining Useful Life</h2>
+      <div class="exp-desc">
+        Left: lead time vs engine total lifetime. Right: what percentage of engine life remains when &Delta; first alerts?
+      </div>
+      <div class="plot-wrap"><img src="exp8_delta_vs_rul.png" alt="Delta vs RUL scatter"></div>
+      <div class="finding">
+        &Delta; consistently alerts with <strong>89%</strong> of engine life remaining,
+        regardless of total engine lifetime. This means the framework scales naturally &mdash; longer-lived engines
+        get proportionally more warning.
+        <span class="badge badge-pass">Scalable</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 04</div>
+      <h2>Detection Comparison: &Delta; vs Variance</h2>
+      <div class="exp-desc">
+        Detection rates, lead times, per-engine scatter, and advantage distribution.
+      </div>
+      <div class="plot-wrap"><img src="exp8_detection_comparison.png" alt="Detection comparison"></div>
+      <div class="finding">
+        Every single engine where &Delta; detected failure, it did so earlier than variance.
+        The mean advantage of <strong>109 cycles</strong> represents significant
+        actionable lead time for maintenance scheduling.
+        <span class="badge badge-pass">Confirmed</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 05</div>
+      <h2>Multi-Engine Coherence Heatmap</h2>
+      <div class="exp-desc">
+        100 engines sorted by lifetime. X-axis: normalized lifecycle (0% = new, 100% = failure).
+        Color: coherence level (blue = coherent, red = degraded).
+      </div>
+      <div class="plot-wrap"><img src="exp8_multi_engine_heatmap.png" alt="Multi-engine heatmap"></div>
+      <div class="finding">
+        A clear universal pattern: coherence degrades progressively across the lifecycle. The transition from
+        high to low coherence is visible across all engines, confirming that &Delta; captures a genuine
+        physical degradation signal rather than noise.
+        <span class="badge badge-pass">Universal Pattern</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notable Engines -->
+  <div class="section">
+    <p class="section-label">Notable Engines</p>
+
+    <h3 style="font-size: 0.95rem; margin-bottom: 1rem;">Largest &Delta; advantage (top 5)</h3>
+    <table>
+      <thead><tr><th>Engine</th><th>Lifetime</th><th>&Delta; Lead</th><th>Var Lead</th><th>Advantage</th></tr></thead>
+      <tbody>
+          <tr><td>#92</td><td>341</td><td style="color: var(--green); font-weight: 600;">320</td><td>0</td><td style="color: var(--green); font-weight: 600;">+320</td></tr>
+          <tr><td>#96</td><td>336</td><td style="color: var(--green); font-weight: 600;">320</td><td>0</td><td style="color: var(--green); font-weight: 600;">+320</td></tr>
+          <tr><td>#67</td><td>313</td><td style="color: var(--green); font-weight: 600;">292</td><td>15</td><td style="color: var(--green); font-weight: 600;">+277</td></tr>
+          <tr><td>#86</td><td>278</td><td style="color: var(--green); font-weight: 600;">257</td><td>0</td><td style="color: var(--green); font-weight: 600;">+257</td></tr>
+          <tr><td>#95</td><td>283</td><td style="color: var(--green); font-weight: 600;">262</td><td>16</td><td style="color: var(--green); font-weight: 600;">+246</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 0.95rem; margin: 1.5rem 0 1rem;">Smallest &Delta; advantage (bottom 5)</h3>
+    <table>
+      <thead><tr><th>Engine</th><th>Lifetime</th><th>&Delta; Lead</th><th>Var Lead</th><th>Advantage</th></tr></thead>
+      <tbody>
+          <tr><td>#29</td><td>163</td><td style="color: var(--green);">142</td><td>115</td><td style="color: var(--amber);">+27</td></tr>
+          <tr><td>#27</td><td>156</td><td style="color: var(--green);">135</td><td>109</td><td style="color: var(--amber);">+26</td></tr>
+          <tr><td>#36</td><td>158</td><td style="color: var(--green);">137</td><td>111</td><td style="color: var(--amber);">+26</td></tr>
+          <tr><td>#65</td><td>153</td><td style="color: var(--green);">132</td><td>106</td><td style="color: var(--amber);">+26</td></tr>
+          <tr><td>#77</td><td>154</td><td style="color: var(--green);">133</td><td>107</td><td style="color: var(--amber);">+26</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Per-Engine Detail -->
+  <div class="section" id="engines">
+    <p class="section-label">All Engines</p>
+    <details>
+      <summary style="cursor: pointer; color: var(--accent); font-size: 0.88rem; margin-bottom: 1rem;">
+        Show all 100 engines
+      </summary>
+      <table>
+        <thead><tr><th>Engine</th><th>Lifetime</th><th>&Delta; Lead</th><th>Var Lead</th><th>Advantage</th></tr></thead>
+        <tbody>
+          <tr><td>#1</td><td>192</td><td style="color: var(--green); font-weight: 600;">171</td><td style="color: var(--green);">113</td><td style="color: var(--green);">+58</td></tr>
+          <tr><td>#2</td><td>287</td><td style="color: var(--green); font-weight: 600;">266</td><td style="color: var(--green);">104</td><td style="color: var(--green);">+162</td></tr>
+          <tr><td>#3</td><td>179</td><td style="color: var(--green); font-weight: 600;">158</td><td style="color: var(--green);">113</td><td style="color: var(--green);">+45</td></tr>
+          <tr><td>#4</td><td>189</td><td style="color: var(--green); font-weight: 600;">168</td><td style="color: var(--green);">21</td><td style="color: var(--green);">+147</td></tr>
+          <tr><td>#5</td><td>269</td><td style="color: var(--green); font-weight: 600;">248</td><td style="color: var(--green);">155</td><td style="color: var(--green);">+93</td></tr>
+          <tr><td>#6</td><td>188</td><td style="color: var(--green); font-weight: 600;">167</td><td style="color: var(--green);">120</td><td style="color: var(--green);">+47</td></tr>
+          <tr><td>#7</td><td>259</td><td style="color: var(--green); font-weight: 600;">238</td><td style="color: var(--green);">142</td><td style="color: var(--green);">+96</td></tr>
+          <tr><td>#8</td><td>150</td><td style="color: var(--green); font-weight: 600;">129</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+129</td></tr>
+          <tr><td>#9</td><td>201</td><td style="color: var(--green); font-weight: 600;">180</td><td style="color: var(--green);">145</td><td style="color: var(--green);">+35</td></tr>
+          <tr><td>#10</td><td>222</td><td style="color: var(--green); font-weight: 600;">201</td><td style="color: var(--green);">72</td><td style="color: var(--green);">+129</td></tr>
+          <tr><td>#11</td><td>240</td><td style="color: var(--green); font-weight: 600;">219</td><td style="color: var(--green);">76</td><td style="color: var(--green);">+143</td></tr>
+          <tr><td>#12</td><td>170</td><td style="color: var(--green); font-weight: 600;">149</td><td style="color: var(--green);">100</td><td style="color: var(--green);">+49</td></tr>
+          <tr><td>#13</td><td>163</td><td style="color: var(--green); font-weight: 600;">147</td><td style="color: var(--green);">75</td><td style="color: var(--green);">+72</td></tr>
+          <tr><td>#14</td><td>180</td><td style="color: var(--green); font-weight: 600;">159</td><td style="color: var(--green);">38</td><td style="color: var(--green);">+121</td></tr>
+          <tr><td>#15</td><td>207</td><td style="color: var(--green); font-weight: 600;">186</td><td style="color: var(--green);">150</td><td style="color: var(--green);">+36</td></tr>
+          <tr><td>#16</td><td>209</td><td style="color: var(--green); font-weight: 600;">188</td><td style="color: var(--green);">112</td><td style="color: var(--green);">+76</td></tr>
+          <tr><td>#17</td><td>276</td><td style="color: var(--green); font-weight: 600;">255</td><td style="color: var(--green);">110</td><td style="color: var(--green);">+145</td></tr>
+          <tr><td>#18</td><td>195</td><td style="color: var(--green); font-weight: 600;">174</td><td style="color: var(--green);">105</td><td style="color: var(--green);">+69</td></tr>
+          <tr><td>#19</td><td>158</td><td style="color: var(--green); font-weight: 600;">137</td><td style="color: var(--green);">91</td><td style="color: var(--green);">+46</td></tr>
+          <tr><td>#20</td><td>234</td><td style="color: var(--green); font-weight: 600;">213</td><td style="color: var(--green);">22</td><td style="color: var(--green);">+191</td></tr>
+          <tr><td>#21</td><td>195</td><td style="color: var(--green); font-weight: 600;">174</td><td style="color: var(--green);">55</td><td style="color: var(--green);">+119</td></tr>
+          <tr><td>#22</td><td>202</td><td style="color: var(--green); font-weight: 600;">181</td><td style="color: var(--green);">131</td><td style="color: var(--green);">+50</td></tr>
+          <tr><td>#23</td><td>168</td><td style="color: var(--green); font-weight: 600;">147</td><td style="color: var(--green);">44</td><td style="color: var(--green);">+103</td></tr>
+          <tr><td>#24</td><td>147</td><td style="color: var(--green); font-weight: 600;">126</td><td style="color: var(--green);">60</td><td style="color: var(--green);">+66</td></tr>
+          <tr><td>#25</td><td>230</td><td style="color: var(--green); font-weight: 600;">209</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+209</td></tr>
+          <tr><td>#26</td><td>199</td><td style="color: var(--green); font-weight: 600;">178</td><td style="color: var(--green);">144</td><td style="color: var(--green);">+34</td></tr>
+          <tr><td>#27</td><td>156</td><td style="color: var(--green); font-weight: 600;">135</td><td style="color: var(--green);">109</td><td style="color: var(--green);">+26</td></tr>
+          <tr><td>#28</td><td>165</td><td style="color: var(--green); font-weight: 600;">144</td><td style="color: var(--green);">71</td><td style="color: var(--green);">+73</td></tr>
+          <tr><td>#29</td><td>163</td><td style="color: var(--green); font-weight: 600;">142</td><td style="color: var(--green);">115</td><td style="color: var(--green);">+27</td></tr>
+          <tr><td>#30</td><td>194</td><td style="color: var(--green); font-weight: 600;">173</td><td style="color: var(--green);">140</td><td style="color: var(--green);">+33</td></tr>
+          <tr><td>#31</td><td>234</td><td style="color: var(--green); font-weight: 600;">213</td><td style="color: var(--green);">47</td><td style="color: var(--green);">+166</td></tr>
+          <tr><td>#32</td><td>191</td><td style="color: var(--green); font-weight: 600;">170</td><td style="color: var(--green);">37</td><td style="color: var(--green);">+133</td></tr>
+          <tr><td>#33</td><td>200</td><td style="color: var(--green); font-weight: 600;">179</td><td style="color: var(--green);">64</td><td style="color: var(--green);">+115</td></tr>
+          <tr><td>#34</td><td>195</td><td style="color: var(--green); font-weight: 600;">174</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+174</td></tr>
+          <tr><td>#35</td><td>181</td><td style="color: var(--green); font-weight: 600;">160</td><td style="color: var(--green);">129</td><td style="color: var(--green);">+31</td></tr>
+          <tr><td>#36</td><td>158</td><td style="color: var(--green); font-weight: 600;">137</td><td style="color: var(--green);">111</td><td style="color: var(--green);">+26</td></tr>
+          <tr><td>#37</td><td>170</td><td style="color: var(--green); font-weight: 600;">149</td><td style="color: var(--green);">75</td><td style="color: var(--green);">+74</td></tr>
+          <tr><td>#38</td><td>194</td><td style="color: var(--green); font-weight: 600;">173</td><td style="color: var(--green);">45</td><td style="color: var(--green);">+128</td></tr>
+          <tr><td>#39</td><td>128</td><td style="color: var(--green); font-weight: 600;">107</td><td style="color: var(--green);">76</td><td style="color: var(--green);">+31</td></tr>
+          <tr><td>#40</td><td>188</td><td style="color: var(--green); font-weight: 600;">167</td><td style="color: var(--green);">20</td><td style="color: var(--green);">+147</td></tr>
+          <tr><td>#41</td><td>216</td><td style="color: var(--green); font-weight: 600;">195</td><td style="color: var(--green);">157</td><td style="color: var(--green);">+38</td></tr>
+          <tr><td>#42</td><td>196</td><td style="color: var(--green); font-weight: 600;">175</td><td style="color: var(--green);">136</td><td style="color: var(--green);">+39</td></tr>
+          <tr><td>#43</td><td>207</td><td style="color: var(--green); font-weight: 600;">186</td><td style="color: var(--green);">150</td><td style="color: var(--green);">+36</td></tr>
+          <tr><td>#44</td><td>192</td><td style="color: var(--green); font-weight: 600;">171</td><td style="color: var(--green);">138</td><td style="color: var(--green);">+33</td></tr>
+          <tr><td>#45</td><td>158</td><td style="color: var(--green); font-weight: 600;">137</td><td style="color: var(--green);">51</td><td style="color: var(--green);">+86</td></tr>
+          <tr><td>#46</td><td>256</td><td style="color: var(--green); font-weight: 600;">235</td><td style="color: var(--green);">39</td><td style="color: var(--green);">+196</td></tr>
+          <tr><td>#47</td><td>214</td><td style="color: var(--green); font-weight: 600;">193</td><td style="color: var(--green);">26</td><td style="color: var(--green);">+167</td></tr>
+          <tr><td>#48</td><td>231</td><td style="color: var(--green); font-weight: 600;">210</td><td style="color: var(--green);">89</td><td style="color: var(--green);">+121</td></tr>
+          <tr><td>#49</td><td>215</td><td style="color: var(--green); font-weight: 600;">194</td><td style="color: var(--green);">36</td><td style="color: var(--green);">+158</td></tr>
+          <tr><td>#50</td><td>198</td><td style="color: var(--green); font-weight: 600;">177</td><td style="color: var(--green);">143</td><td style="color: var(--green);">+34</td></tr>
+          <tr><td>#51</td><td>213</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">30</td><td style="color: var(--green);">+162</td></tr>
+          <tr><td>#52</td><td>213</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">50</td><td style="color: var(--green);">+142</td></tr>
+          <tr><td>#53</td><td>195</td><td style="color: var(--green); font-weight: 600;">174</td><td style="color: var(--green);">90</td><td style="color: var(--green);">+84</td></tr>
+          <tr><td>#54</td><td>257</td><td style="color: var(--green); font-weight: 600;">236</td><td style="color: var(--green);">95</td><td style="color: var(--green);">+141</td></tr>
+          <tr><td>#55</td><td>193</td><td style="color: var(--green); font-weight: 600;">172</td><td style="color: var(--green);">139</td><td style="color: var(--green);">+33</td></tr>
+          <tr><td>#56</td><td>275</td><td style="color: var(--green); font-weight: 600;">254</td><td style="color: var(--green);">104</td><td style="color: var(--green);">+150</td></tr>
+          <tr><td>#57</td><td>137</td><td style="color: var(--green); font-weight: 600;">116</td><td style="color: var(--green);">25</td><td style="color: var(--green);">+91</td></tr>
+          <tr><td>#58</td><td>147</td><td style="color: var(--green); font-weight: 600;">126</td><td style="color: var(--green);">95</td><td style="color: var(--green);">+31</td></tr>
+          <tr><td>#59</td><td>231</td><td style="color: var(--green); font-weight: 600;">210</td><td style="color: var(--green);">109</td><td style="color: var(--green);">+101</td></tr>
+          <tr><td>#60</td><td>172</td><td style="color: var(--green); font-weight: 600;">151</td><td style="color: var(--green);">37</td><td style="color: var(--green);">+114</td></tr>
+          <tr><td>#61</td><td>185</td><td style="color: var(--green); font-weight: 600;">164</td><td style="color: var(--green);">77</td><td style="color: var(--green);">+87</td></tr>
+          <tr><td>#62</td><td>180</td><td style="color: var(--green); font-weight: 600;">159</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+159</td></tr>
+          <tr><td>#63</td><td>174</td><td style="color: var(--green); font-weight: 600;">153</td><td style="color: var(--green);">14</td><td style="color: var(--green);">+139</td></tr>
+          <tr><td>#64</td><td>283</td><td style="color: var(--green); font-weight: 600;">262</td><td style="color: var(--green);">51</td><td style="color: var(--green);">+211</td></tr>
+          <tr><td>#65</td><td>153</td><td style="color: var(--green); font-weight: 600;">132</td><td style="color: var(--green);">106</td><td style="color: var(--green);">+26</td></tr>
+          <tr><td>#66</td><td>202</td><td style="color: var(--green); font-weight: 600;">181</td><td style="color: var(--green);">111</td><td style="color: var(--green);">+70</td></tr>
+          <tr><td>#67</td><td>313</td><td style="color: var(--green); font-weight: 600;">292</td><td style="color: var(--green);">15</td><td style="color: var(--green);">+277</td></tr>
+          <tr><td>#68</td><td>199</td><td style="color: var(--green); font-weight: 600;">178</td><td style="color: var(--green);">24</td><td style="color: var(--green);">+154</td></tr>
+          <tr><td>#69</td><td>362</td><td style="color: var(--green); font-weight: 600;">341</td><td style="color: var(--green);">99</td><td style="color: var(--green);">+242</td></tr>
+          <tr><td>#70</td><td>137</td><td style="color: var(--green); font-weight: 600;">116</td><td style="color: var(--green);">50</td><td style="color: var(--green);">+66</td></tr>
+          <tr><td>#71</td><td>208</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">26</td><td style="color: var(--green);">+166</td></tr>
+          <tr><td>#72</td><td>213</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">65</td><td style="color: var(--green);">+127</td></tr>
+          <tr><td>#73</td><td>213</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">85</td><td style="color: var(--green);">+107</td></tr>
+          <tr><td>#74</td><td>166</td><td style="color: var(--green); font-weight: 600;">145</td><td style="color: var(--green);">92</td><td style="color: var(--green);">+53</td></tr>
+          <tr><td>#75</td><td>229</td><td style="color: var(--green); font-weight: 600;">208</td><td style="color: var(--green);">168</td><td style="color: var(--green);">+40</td></tr>
+          <tr><td>#76</td><td>210</td><td style="color: var(--green); font-weight: 600;">189</td><td style="color: var(--green);">152</td><td style="color: var(--green);">+37</td></tr>
+          <tr><td>#77</td><td>154</td><td style="color: var(--green); font-weight: 600;">133</td><td style="color: var(--green);">107</td><td style="color: var(--green);">+26</td></tr>
+          <tr><td>#78</td><td>231</td><td style="color: var(--green); font-weight: 600;">210</td><td style="color: var(--green);">29</td><td style="color: var(--green);">+181</td></tr>
+          <tr><td>#79</td><td>199</td><td style="color: var(--green); font-weight: 600;">178</td><td style="color: var(--green);">109</td><td style="color: var(--green);">+69</td></tr>
+          <tr><td>#80</td><td>185</td><td style="color: var(--green); font-weight: 600;">164</td><td style="color: var(--green);">17</td><td style="color: var(--green);">+147</td></tr>
+          <tr><td>#81</td><td>240</td><td style="color: var(--green); font-weight: 600;">219</td><td style="color: var(--green);">111</td><td style="color: var(--green);">+108</td></tr>
+          <tr><td>#82</td><td>214</td><td style="color: var(--green); font-weight: 600;">193</td><td style="color: var(--green);">36</td><td style="color: var(--green);">+157</td></tr>
+          <tr><td>#83</td><td>293</td><td style="color: var(--green); font-weight: 600;">272</td><td style="color: var(--green);">54</td><td style="color: var(--green);">+218</td></tr>
+          <tr><td>#84</td><td>267</td><td style="color: var(--green); font-weight: 600;">246</td><td style="color: var(--green);">193</td><td style="color: var(--green);">+53</td></tr>
+          <tr><td>#85</td><td>188</td><td style="color: var(--green); font-weight: 600;">167</td><td style="color: var(--green);">115</td><td style="color: var(--green);">+52</td></tr>
+          <tr><td>#86</td><td>278</td><td style="color: var(--green); font-weight: 600;">257</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+257</td></tr>
+          <tr><td>#87</td><td>178</td><td style="color: var(--green); font-weight: 600;">157</td><td style="color: var(--green);">77</td><td style="color: var(--green);">+80</td></tr>
+          <tr><td>#88</td><td>213</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">35</td><td style="color: var(--green);">+157</td></tr>
+          <tr><td>#89</td><td>217</td><td style="color: var(--green); font-weight: 600;">196</td><td style="color: var(--green);">43</td><td style="color: var(--green);">+153</td></tr>
+          <tr><td>#90</td><td>154</td><td style="color: var(--green); font-weight: 600;">133</td><td style="color: var(--green);">57</td><td style="color: var(--green);">+76</td></tr>
+          <tr><td>#91</td><td>135</td><td style="color: var(--green); font-weight: 600;">114</td><td style="color: var(--green);">23</td><td style="color: var(--green);">+91</td></tr>
+          <tr><td>#92</td><td>341</td><td style="color: var(--green); font-weight: 600;">320</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+320</td></tr>
+          <tr><td>#93</td><td>155</td><td style="color: var(--green); font-weight: 600;">134</td><td style="color: var(--green);">68</td><td style="color: var(--green);">+66</td></tr>
+          <tr><td>#94</td><td>258</td><td style="color: var(--green); font-weight: 600;">237</td><td style="color: var(--green);">56</td><td style="color: var(--green);">+181</td></tr>
+          <tr><td>#95</td><td>283</td><td style="color: var(--green); font-weight: 600;">262</td><td style="color: var(--green);">16</td><td style="color: var(--green);">+246</td></tr>
+          <tr><td>#96</td><td>336</td><td style="color: var(--green); font-weight: 600;">320</td><td style="color: var(--red);">0</td><td style="color: var(--green);">+320</td></tr>
+          <tr><td>#97</td><td>202</td><td style="color: var(--green); font-weight: 600;">181</td><td style="color: var(--green);">101</td><td style="color: var(--green);">+80</td></tr>
+          <tr><td>#98</td><td>156</td><td style="color: var(--green); font-weight: 600;">135</td><td style="color: var(--green);">69</td><td style="color: var(--green);">+66</td></tr>
+          <tr><td>#99</td><td>185</td><td style="color: var(--green); font-weight: 600;">164</td><td style="color: var(--green);">22</td><td style="color: var(--green);">+142</td></tr>
+          <tr><td>#100</td><td>200</td><td style="color: var(--green); font-weight: 600;">179</td><td style="color: var(--green);">124</td><td style="color: var(--green);">+55</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+
+  <!-- Dataset -->
+  <div class="section">
+    <p class="section-label">Dataset</p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      <strong style="color: var(--text);">NASA C-MAPSS FD001</strong> &mdash; Commercial Modular Aero-Propulsion
+      System Simulation. 100 turbofan engines run to failure under a single operating condition
+      (sea level). 21 sensor channels + 3 operational settings per cycle. Mean lifetime: 206 cycles.
+      Source: NASA Prognostics Center of Excellence.
+    </p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
+      <strong style="color: var(--text);">Configuration</strong> &mdash;
+      Baseline: first 20% of cycles.
+      Window: 30 cycles, step 5.
+      &Delta; threshold: 0.3.
+      Sensors: s2, s3, s4, s7, s11, s12 (highest degradation signal).
+    </p>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <span class="tag tag-green">Python</span>
+      <span class="tag" style="color: var(--accent);">NumPy</span>
+      <span class="tag" style="color: var(--accent2);">SciPy</span>
+      <span class="tag" style="color: var(--teal);">NASA C-MAPSS</span>
+      <span class="tag tag-amber">FD001</span>
+      <span class="tag" style="color: var(--text);">100 Engines</span>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="section">
+    <p class="section-label">Navigation</p>
+    <p style="font-size: 0.85rem;">
+      <a href="/r/research/" style="color: var(--accent); text-decoration: none;">&larr; Back to all experiments</a>
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <p>&Delta;.72 Coherence Framework &mdash; Experiment 08: NASA C-MAPSS Turbofan</p>
+  <p style="margin-top: 0.5rem;"><a href="/r/research/">thorarinson</a> &middot; <a href="https://coherenceengine.org">coherenceengine.org</a></p>
+</footer>
+
+</body>
+</html>

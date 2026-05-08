@@ -1,0 +1,675 @@
+{
+  "experiment": 8,
+  "name": "NAB Benchmark Validation",
+  "overall": {
+    "n_files": 53,
+    "coherence_f1": 0.048521051016818174,
+    "coherence_precision": 0.07459085327341154,
+    "coherence_recall": 0.0826169098342999,
+    "variance_f1": 0.34628088170613147,
+    "variance_precision": 0.3361233423378803,
+    "variance_recall": 0.40617394534643986
+  },
+  "categories": {
+    "artificialWithAnomaly": {
+      "n_files": 6,
+      "coherence_f1": 0.0809990159665446,
+      "coherence_precision": 0.044833113463628955,
+      "coherence_recall": 0.41935483870967744,
+      "variance_f1": 0.2783806001435236,
+      "variance_precision": 0.27843915343915343,
+      "variance_recall": 0.2841191066997519,
+      "per_file": [
+        {
+          "filename": "art_daily_flatmiddle.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.14229432213209733,
+          "coherence_precision": 0.07847648261758691,
+          "coherence_recall": 0.7617866004962779,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "art_daily_jumpsdown.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.06862503085657862,
+          "coherence_precision": 0.0381030701754386,
+          "coherence_recall": 0.34491315136476425,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "art_daily_jumpsup.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.18164481525625742,
+          "coherence_precision": 0.10047468354430379,
+          "coherence_recall": 0.9454094292803971,
+          "variance_f1": 0.8389715832205683,
+          "variance_precision": 0.9226190476190477,
+          "variance_recall": 0.7692307692307693
+        },
+        {
+          "filename": "art_daily_nojump.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.09342992755433426,
+          "coherence_precision": 0.051944444444444446,
+          "coherence_recall": 0.4640198511166253,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "art_increase_spike_density.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "art_load_balancer_spikes.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.8313120176405733,
+          "variance_precision": 0.748015873015873,
+          "variance_recall": 0.9354838709677419
+        }
+      ]
+    },
+    "realAWSCloudwatch": {
+      "n_files": 17,
+      "coherence_f1": 0.07396412354648255,
+      "coherence_precision": 0.08499975378927772,
+      "coherence_recall": 0.07150335887520183,
+      "variance_f1": 0.43593119996059854,
+      "variance_precision": 0.3966588662306656,
+      "variance_recall": 0.5488512137502968,
+      "per_file": [
+        {
+          "filename": "ec2_cpu_utilization_24ae8d.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.6162464985994397,
+          "variance_precision": 0.7051282051282052,
+          "variance_recall": 0.5472636815920398
+        },
+        {
+          "filename": "ec2_cpu_utilization_53ea38.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "ec2_cpu_utilization_5f5533.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "ec2_cpu_utilization_77c1ca.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.027127003699136867,
+          "coherence_precision": 0.02696078431372549,
+          "coherence_recall": 0.02729528535980149,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "ec2_cpu_utilization_825cc2.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.6925880923450789,
+          "variance_precision": 0.59375,
+          "variance_recall": 0.8309037900874635
+        },
+        {
+          "filename": "ec2_cpu_utilization_ac20cd.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.7465007776049767,
+          "coherence_precision": 1.0,
+          "coherence_recall": 0.5955334987593052,
+          "variance_f1": 0.5623430962343097,
+          "variance_precision": 0.42424242424242425,
+          "variance_recall": 0.8337468982630273
+        },
+        {
+          "filename": "ec2_cpu_utilization_c6585a.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 0,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 1.0,
+          "variance_precision": 1.0,
+          "variance_recall": 1.0
+        },
+        {
+          "filename": "ec2_cpu_utilization_fe7f93.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.2851952770208901,
+          "coherence_precision": 0.22557471264367815,
+          "coherence_recall": 0.38765432098765434,
+          "variance_f1": 0.5247813411078717,
+          "variance_precision": 0.4326923076923077,
+          "variance_recall": 0.6666666666666666
+        },
+        {
+          "filename": "ec2_disk_write_bytes_1ef3de.csv",
+          "n_points": 4730,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.19856704196519961,
+          "coherence_precision": 0.19246031746031747,
+          "coherence_recall": 0.20507399577167018,
+          "variance_f1": 0.3212493028443949,
+          "variance_precision": 0.21818181818181817,
+          "variance_recall": 0.6088794926004228
+        },
+        {
+          "filename": "ec2_disk_write_bytes_c0d644.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.26865671641791045,
+          "variance_precision": 0.225,
+          "variance_recall": 0.3333333333333333
+        },
+        {
+          "filename": "ec2_network_in_257a54.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.8727272727272727,
+          "variance_precision": 1.0,
+          "variance_recall": 0.7741935483870968
+        },
+        {
+          "filename": "ec2_network_in_5abac7.csv",
+          "n_points": 4730,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.552414605418139,
+          "variance_precision": 0.3831699346405229,
+          "variance_recall": 0.989451476793249
+        },
+        {
+          "filename": "elb_request_count_8c0756.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "grok_asg_anomaly.csv",
+          "n_points": 4621,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.3757575757575758,
+          "variance_precision": 0.4305555555555556,
+          "variance_recall": 0.3333333333333333
+        },
+        {
+          "filename": "iio_us-east-1_i-a2eb1cd9_NetworkIn.csv",
+          "n_points": 1243,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.4732510288065843,
+          "variance_precision": 0.3194444444444444,
+          "variance_recall": 0.9126984126984127
+        },
+        {
+          "filename": "rds_cpu_utilization_cc0c53.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.5275590551181103,
+          "variance_precision": 0.5583333333333333,
+          "variance_recall": 0.5
+        },
+        {
+          "filename": "rds_cpu_utilization_e47b3b.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.6232558139534884,
+          "variance_precision": 0.4527027027027027,
+          "variance_recall": 1.0
+        }
+      ]
+    },
+    "realAdExchange": {
+      "n_files": 6,
+      "coherence_f1": 0.0,
+      "coherence_precision": 0.0,
+      "coherence_recall": 0.0,
+      "variance_f1": 0.183405908848393,
+      "variance_precision": 0.14583333333333331,
+      "variance_recall": 0.2865757044379713,
+      "per_file": [
+        {
+          "filename": "exchange-2_cpc_results.csv",
+          "n_points": 1624,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "exchange-2_cpm_results.csv",
+          "n_points": 1624,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "exchange-3_cpc_results.csv",
+          "n_points": 1538,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.4797507788161994,
+          "variance_precision": 0.4583333333333333,
+          "variance_recall": 0.5032679738562091
+        },
+        {
+          "filename": "exchange-3_cpm_results.csv",
+          "n_points": 1538,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "exchange-4_cpc_results.csv",
+          "n_points": 1643,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.27906976744186046,
+          "variance_precision": 0.1875,
+          "variance_recall": 0.5454545454545454
+        },
+        {
+          "filename": "exchange-4_cpm_results.csv",
+          "n_points": 1643,
+          "n_anomaly_windows": 4,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.34161490683229817,
+          "variance_precision": 0.22916666666666666,
+          "variance_recall": 0.6707317073170732
+        }
+      ]
+    },
+    "realKnownCause": {
+      "n_files": 7,
+      "coherence_f1": 0.042377606780417076,
+      "coherence_precision": 0.03801520608243297,
+      "coherence_recall": 0.04787100025195263,
+      "variance_f1": 0.16806737199115898,
+      "variance_precision": 0.15527696238312677,
+      "variance_recall": 0.1885732668519246,
+      "per_file": [
+        {
+          "filename": "ambient_temperature_system_failure.csv",
+          "n_points": 7267,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.41921397379912667,
+          "variance_precision": 0.4444444444444444,
+          "variance_recall": 0.39669421487603307
+        },
+        {
+          "filename": "cpu_utilization_asg_misconfiguration.csv",
+          "n_points": 18050,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "ec2_request_latency_system_failure.csv",
+          "n_points": 4032,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.5108958837772397,
+          "variance_precision": 0.4395833333333333,
+          "variance_recall": 0.6098265895953757
+        },
+        {
+          "filename": "machine_temperature_system_failure.csv",
+          "n_points": 22695,
+          "n_anomaly_windows": 4,
+          "coherence_f1": 0.29664324746291953,
+          "coherence_precision": 0.2661064425770308,
+          "coherence_recall": 0.3350970017636684,
+          "variance_f1": 0.24636174636174638,
+          "variance_precision": 0.2029109589041096,
+          "variance_recall": 0.3134920634920635
+        },
+        {
+          "filename": "nyc_taxi.csv",
+          "n_points": 10320,
+          "n_anomaly_windows": 5,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "rogue_agent_key_hold.csv",
+          "n_points": 1882,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "rogue_agent_key_updown.csv",
+          "n_points": 5315,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        }
+      ]
+    },
+    "realTraffic": {
+      "n_files": 7,
+      "coherence_f1": 0.0,
+      "coherence_precision": 0.0,
+      "coherence_recall": 0.0,
+      "variance_f1": 0.20834879181111438,
+      "variance_precision": 0.17081529581529584,
+      "variance_recall": 0.2857142857142857,
+      "per_file": [
+        {
+          "filename": "TravelTime_387.csv",
+          "n_points": 2500,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "TravelTime_451.csv",
+          "n_points": 2162,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "occupancy_6005.csv",
+          "n_points": 2380,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "occupancy_t4013.csv",
+          "n_points": 2500,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.48638132295719844,
+          "variance_precision": 0.4734848484848485,
+          "variance_recall": 0.5
+        },
+        {
+          "filename": "speed_6005.csv",
+          "n_points": 2500,
+          "n_anomaly_windows": 1,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.0,
+          "variance_precision": 0.0,
+          "variance_recall": 0.0
+        },
+        {
+          "filename": "speed_7578.csv",
+          "n_points": 1127,
+          "n_anomaly_windows": 4,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.28712871287128716,
+          "variance_precision": 0.2013888888888889,
+          "variance_recall": 0.5
+        },
+        {
+          "filename": "speed_t4013.csv",
+          "n_points": 2495,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.684931506849315,
+          "variance_precision": 0.5208333333333334,
+          "variance_recall": 1.0
+        }
+      ]
+    },
+    "realTweets": {
+      "n_files": 10,
+      "coherence_f1": 0.05315882603389734,
+      "coherence_precision": 0.19732142857142856,
+      "coherence_recall": 0.031191308631772996,
+      "variance_f1": 0.5536424130527381,
+      "variance_precision": 0.6243055689962467,
+      "variance_recall": 0.5452566734816455,
+      "per_file": [
+        {
+          "filename": "Twitter_volume_AAPL.csv",
+          "n_points": 15902,
+          "n_anomaly_windows": 4,
+          "coherence_f1": 0.3399168399168399,
+          "coherence_precision": 0.9732142857142857,
+          "coherence_recall": 0.20591939546599497,
+          "variance_f1": 0.5086342229199371,
+          "variance_precision": 0.675,
+          "variance_recall": 0.4080604534005038
+        },
+        {
+          "filename": "Twitter_volume_AMZN.csv",
+          "n_points": 15831,
+          "n_anomaly_windows": 4,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.6619519094766619,
+          "variance_precision": 0.75,
+          "variance_recall": 0.5924050632911393
+        },
+        {
+          "filename": "Twitter_volume_CRM.csv",
+          "n_points": 15902,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.4978783592644979,
+          "variance_precision": 1.0,
+          "variance_recall": 0.3314500941619586
+        },
+        {
+          "filename": "Twitter_volume_CVS.csv",
+          "n_points": 15853,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.8088139987038239,
+          "variance_precision": 0.8,
+          "variance_recall": 0.817824377457405
+        },
+        {
+          "filename": "Twitter_volume_FB.csv",
+          "n_points": 15833,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.49095200629425645,
+          "variance_precision": 0.65,
+          "variance_recall": 0.3944374209860936
+        },
+        {
+          "filename": "Twitter_volume_GOOG.csv",
+          "n_points": 15842,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.618421052631579,
+          "variance_precision": 0.5845771144278606,
+          "variance_recall": 0.6564245810055865
+        },
+        {
+          "filename": "Twitter_volume_IBM.csv",
+          "n_points": 15893,
+          "n_anomaly_windows": 2,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.4833059660645867,
+          "variance_precision": 0.4278100775193798,
+          "variance_recall": 0.5553459119496855
+        },
+        {
+          "filename": "Twitter_volume_KO.csv",
+          "n_points": 15851,
+          "n_anomaly_windows": 3,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.6417502278942571,
+          "variance_precision": 0.6197183098591549,
+          "variance_recall": 0.665406427221172
+        },
+        {
+          "filename": "Twitter_volume_PFE.csv",
+          "n_points": 15858,
+          "n_anomaly_windows": 4,
+          "coherence_f1": 0.0,
+          "coherence_precision": 0.0,
+          "coherence_recall": 0.0,
+          "variance_f1": 0.5100882723833543,
+          "variance_precision": 0.5107323232323232,
+          "variance_recall": 0.5094458438287154
+        },
+        {
+          "filename": "Twitter_volume_UPS.csv",
+          "n_points": 15866,
+          "n_anomaly_windows": 5,
+          "coherence_f1": 0.1916714204221335,
+          "coherence_precision": 1.0,
+          "coherence_recall": 0.10599369085173502,
+          "variance_f1": 0.31462811489442644,
+          "variance_precision": 0.22521786492374726,
+          "variance_recall": 0.5217665615141955
+        }
+      ]
+    }
+  },
+  "config": {
+    "window_size": 168,
+    "step_size": 24,
+    "baseline_window": 168,
+    "delta_threshold": 0.3,
+    "memory_threshold": 0.4,
+    "recovery_threshold": 0.4,
+    "var_window": 168,
+    "var_zscore": 2.5
+  },
+  "elapsed_s": 2.799006938934326
+}

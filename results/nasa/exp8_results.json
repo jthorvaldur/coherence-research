@@ -1,0 +1,1038 @@
+{
+  "experiment": 8,
+  "name": "NASA C-MAPSS Turbofan Engine Degradation",
+  "dataset": "FD001 (100 engines, 21 sensors, single operating condition)",
+  "sensors_used": [
+    "s2",
+    "s3",
+    "s4",
+    "s7",
+    "s11",
+    "s12"
+  ],
+  "config": {
+    "baseline_fraction": 0.2,
+    "window_size": 30,
+    "step_size": 5,
+    "delta_threshold": 0.3,
+    "memory_threshold": 0.4,
+    "recovery_threshold": 0.4,
+    "variance_zscore": 2.0
+  },
+  "stats": {
+    "n_engines": 100,
+    "delta_detection_rate": 1.0,
+    "var_detection_rate": 0.93,
+    "delta_mean_lead": 185.46,
+    "delta_median_lead": 178.0,
+    "var_mean_lead": 82.50537634408602,
+    "var_median_lead": 77.0,
+    "mean_advantage": 108.73,
+    "mean_lifetime": 206.31,
+    "mean_pct_remaining": 89.42223396404306,
+    "example_engine": "26"
+  },
+  "per_engine": [
+    {
+      "unit_id": "1",
+      "max_cycle": 192,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 79,
+      "delta_lead": 171,
+      "var_lead": 113,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "2",
+      "max_cycle": 287,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 183,
+      "delta_lead": 266,
+      "var_lead": 104,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "3",
+      "max_cycle": 179,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 66,
+      "delta_lead": 158,
+      "var_lead": 113,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "4",
+      "max_cycle": 189,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 168,
+      "delta_lead": 168,
+      "var_lead": 21,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "5",
+      "max_cycle": 269,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 114,
+      "delta_lead": 248,
+      "var_lead": 155,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "6",
+      "max_cycle": 188,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 68,
+      "delta_lead": 167,
+      "var_lead": 120,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "7",
+      "max_cycle": 259,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 117,
+      "delta_lead": 238,
+      "var_lead": 142,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "8",
+      "max_cycle": 150,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 150,
+      "delta_lead": 129,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "9",
+      "max_cycle": 201,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 56,
+      "delta_lead": 180,
+      "var_lead": 145,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "10",
+      "max_cycle": 222,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 150,
+      "delta_lead": 201,
+      "var_lead": 72,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "11",
+      "max_cycle": 240,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 164,
+      "delta_lead": 219,
+      "var_lead": 76,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "12",
+      "max_cycle": 170,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 70,
+      "delta_lead": 149,
+      "var_lead": 100,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "13",
+      "max_cycle": 163,
+      "delta_alert_cycle": 16,
+      "var_alert_cycle": 88,
+      "delta_lead": 147,
+      "var_lead": 75,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "14",
+      "max_cycle": 180,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 142,
+      "delta_lead": 159,
+      "var_lead": 38,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "15",
+      "max_cycle": 207,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 57,
+      "delta_lead": 186,
+      "var_lead": 150,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "16",
+      "max_cycle": 209,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 97,
+      "delta_lead": 188,
+      "var_lead": 112,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "17",
+      "max_cycle": 276,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 166,
+      "delta_lead": 255,
+      "var_lead": 110,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "18",
+      "max_cycle": 195,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 90,
+      "delta_lead": 174,
+      "var_lead": 105,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "19",
+      "max_cycle": 158,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 67,
+      "delta_lead": 137,
+      "var_lead": 91,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "20",
+      "max_cycle": 234,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 212,
+      "delta_lead": 213,
+      "var_lead": 22,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "21",
+      "max_cycle": 195,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 140,
+      "delta_lead": 174,
+      "var_lead": 55,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "22",
+      "max_cycle": 202,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 71,
+      "delta_lead": 181,
+      "var_lead": 131,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "23",
+      "max_cycle": 168,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 124,
+      "delta_lead": 147,
+      "var_lead": 44,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "24",
+      "max_cycle": 147,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 87,
+      "delta_lead": 126,
+      "var_lead": 60,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "25",
+      "max_cycle": 230,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 230,
+      "delta_lead": 209,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "26",
+      "max_cycle": 199,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 55,
+      "delta_lead": 178,
+      "var_lead": 144,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "27",
+      "max_cycle": 156,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 47,
+      "delta_lead": 135,
+      "var_lead": 109,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "28",
+      "max_cycle": 165,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 94,
+      "delta_lead": 144,
+      "var_lead": 71,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "29",
+      "max_cycle": 163,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 48,
+      "delta_lead": 142,
+      "var_lead": 115,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "30",
+      "max_cycle": 194,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 54,
+      "delta_lead": 173,
+      "var_lead": 140,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "31",
+      "max_cycle": 234,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 187,
+      "delta_lead": 213,
+      "var_lead": 47,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "32",
+      "max_cycle": 191,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 154,
+      "delta_lead": 170,
+      "var_lead": 37,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "33",
+      "max_cycle": 200,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 136,
+      "delta_lead": 179,
+      "var_lead": 64,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "34",
+      "max_cycle": 195,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 195,
+      "delta_lead": 174,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "35",
+      "max_cycle": 181,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 52,
+      "delta_lead": 160,
+      "var_lead": 129,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "36",
+      "max_cycle": 158,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 47,
+      "delta_lead": 137,
+      "var_lead": 111,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "37",
+      "max_cycle": 170,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 95,
+      "delta_lead": 149,
+      "var_lead": 75,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "38",
+      "max_cycle": 194,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 149,
+      "delta_lead": 173,
+      "var_lead": 45,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "39",
+      "max_cycle": 128,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 52,
+      "delta_lead": 107,
+      "var_lead": 76,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "40",
+      "max_cycle": 188,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 168,
+      "delta_lead": 167,
+      "var_lead": 20,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "41",
+      "max_cycle": 216,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 59,
+      "delta_lead": 195,
+      "var_lead": 157,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "42",
+      "max_cycle": 196,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 60,
+      "delta_lead": 175,
+      "var_lead": 136,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "43",
+      "max_cycle": 207,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 57,
+      "delta_lead": 186,
+      "var_lead": 150,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "44",
+      "max_cycle": 192,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 54,
+      "delta_lead": 171,
+      "var_lead": 138,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "45",
+      "max_cycle": 158,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 107,
+      "delta_lead": 137,
+      "var_lead": 51,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "46",
+      "max_cycle": 256,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 217,
+      "delta_lead": 235,
+      "var_lead": 39,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "47",
+      "max_cycle": 214,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 188,
+      "delta_lead": 193,
+      "var_lead": 26,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "48",
+      "max_cycle": 231,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 142,
+      "delta_lead": 210,
+      "var_lead": 89,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "49",
+      "max_cycle": 215,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 179,
+      "delta_lead": 194,
+      "var_lead": 36,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "50",
+      "max_cycle": 198,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 55,
+      "delta_lead": 177,
+      "var_lead": 143,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "51",
+      "max_cycle": 213,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 183,
+      "delta_lead": 192,
+      "var_lead": 30,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "52",
+      "max_cycle": 213,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 163,
+      "delta_lead": 192,
+      "var_lead": 50,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "53",
+      "max_cycle": 195,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 105,
+      "delta_lead": 174,
+      "var_lead": 90,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "54",
+      "max_cycle": 257,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 162,
+      "delta_lead": 236,
+      "var_lead": 95,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "55",
+      "max_cycle": 193,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 54,
+      "delta_lead": 172,
+      "var_lead": 139,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "56",
+      "max_cycle": 275,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 171,
+      "delta_lead": 254,
+      "var_lead": 104,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "57",
+      "max_cycle": 137,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 112,
+      "delta_lead": 116,
+      "var_lead": 25,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "58",
+      "max_cycle": 147,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 52,
+      "delta_lead": 126,
+      "var_lead": 95,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "59",
+      "max_cycle": 231,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 122,
+      "delta_lead": 210,
+      "var_lead": 109,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "60",
+      "max_cycle": 172,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 135,
+      "delta_lead": 151,
+      "var_lead": 37,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "61",
+      "max_cycle": 185,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 108,
+      "delta_lead": 164,
+      "var_lead": 77,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "62",
+      "max_cycle": 180,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 180,
+      "delta_lead": 159,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "63",
+      "max_cycle": 174,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 160,
+      "delta_lead": 153,
+      "var_lead": 14,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "64",
+      "max_cycle": 283,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 232,
+      "delta_lead": 262,
+      "var_lead": 51,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "65",
+      "max_cycle": 153,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 47,
+      "delta_lead": 132,
+      "var_lead": 106,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "66",
+      "max_cycle": 202,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 91,
+      "delta_lead": 181,
+      "var_lead": 111,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "67",
+      "max_cycle": 313,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 298,
+      "delta_lead": 292,
+      "var_lead": 15,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "68",
+      "max_cycle": 199,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 175,
+      "delta_lead": 178,
+      "var_lead": 24,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "69",
+      "max_cycle": 362,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 263,
+      "delta_lead": 341,
+      "var_lead": 99,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "70",
+      "max_cycle": 137,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 87,
+      "delta_lead": 116,
+      "var_lead": 50,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "71",
+      "max_cycle": 208,
+      "delta_alert_cycle": 16,
+      "var_alert_cycle": 182,
+      "delta_lead": 192,
+      "var_lead": 26,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "72",
+      "max_cycle": 213,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 148,
+      "delta_lead": 192,
+      "var_lead": 65,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "73",
+      "max_cycle": 213,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 128,
+      "delta_lead": 192,
+      "var_lead": 85,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "74",
+      "max_cycle": 166,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 74,
+      "delta_lead": 145,
+      "var_lead": 92,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "75",
+      "max_cycle": 229,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 61,
+      "delta_lead": 208,
+      "var_lead": 168,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "76",
+      "max_cycle": 210,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 58,
+      "delta_lead": 189,
+      "var_lead": 152,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "77",
+      "max_cycle": 154,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 47,
+      "delta_lead": 133,
+      "var_lead": 107,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "78",
+      "max_cycle": 231,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 202,
+      "delta_lead": 210,
+      "var_lead": 29,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "79",
+      "max_cycle": 199,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 90,
+      "delta_lead": 178,
+      "var_lead": 109,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "80",
+      "max_cycle": 185,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 168,
+      "delta_lead": 164,
+      "var_lead": 17,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "81",
+      "max_cycle": 240,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 129,
+      "delta_lead": 219,
+      "var_lead": 111,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "82",
+      "max_cycle": 214,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 178,
+      "delta_lead": 193,
+      "var_lead": 36,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "83",
+      "max_cycle": 293,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 239,
+      "delta_lead": 272,
+      "var_lead": 54,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "84",
+      "max_cycle": 267,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 74,
+      "delta_lead": 246,
+      "var_lead": 193,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "85",
+      "max_cycle": 188,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 73,
+      "delta_lead": 167,
+      "var_lead": 115,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "86",
+      "max_cycle": 278,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 278,
+      "delta_lead": 257,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "87",
+      "max_cycle": 178,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 101,
+      "delta_lead": 157,
+      "var_lead": 77,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "88",
+      "max_cycle": 213,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 178,
+      "delta_lead": 192,
+      "var_lead": 35,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "89",
+      "max_cycle": 217,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 174,
+      "delta_lead": 196,
+      "var_lead": 43,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "90",
+      "max_cycle": 154,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 97,
+      "delta_lead": 133,
+      "var_lead": 57,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "91",
+      "max_cycle": 135,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 112,
+      "delta_lead": 114,
+      "var_lead": 23,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "92",
+      "max_cycle": 341,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 341,
+      "delta_lead": 320,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "93",
+      "max_cycle": 155,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 87,
+      "delta_lead": 134,
+      "var_lead": 68,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "94",
+      "max_cycle": 258,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 202,
+      "delta_lead": 237,
+      "var_lead": 56,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "95",
+      "max_cycle": 283,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 267,
+      "delta_lead": 262,
+      "var_lead": 16,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "96",
+      "max_cycle": 336,
+      "delta_alert_cycle": 16,
+      "var_alert_cycle": 336,
+      "delta_lead": 320,
+      "var_lead": 0,
+      "delta_detected": true,
+      "var_detected": false
+    },
+    {
+      "unit_id": "97",
+      "max_cycle": 202,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 101,
+      "delta_lead": 181,
+      "var_lead": 101,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "98",
+      "max_cycle": 156,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 87,
+      "delta_lead": 135,
+      "var_lead": 69,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "99",
+      "max_cycle": 185,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 163,
+      "delta_lead": 164,
+      "var_lead": 22,
+      "delta_detected": true,
+      "var_detected": true
+    },
+    {
+      "unit_id": "100",
+      "max_cycle": 200,
+      "delta_alert_cycle": 21,
+      "var_alert_cycle": 76,
+      "delta_lead": 179,
+      "var_lead": 124,
+      "delta_detected": true,
+      "var_detected": true
+    }
+  ],
+  "elapsed_s": 3.5387110710144043
+}
