@@ -18,7 +18,7 @@
       "global_W": 1.0,
       "n_windows": 725,
       "n_coherence_alerts": 84,
-      "n_variance_alerts": "0",
+      "n_variance_alerts": 0,
       "coherence_only_alerts": 84,
       "variance_only_alerts": 0,
       "both_alerts": 0,
@@ -27,7 +27,7 @@
       "min_delta": 1.565495482836242e-07,
       "mean_M": 0.4854456574058975,
       "mean_W": 0.7055292603399579,
-      "elapsed_s": 0.7658178806304932
+      "elapsed_s": 0.7123012542724609
     },
     "Hog_office_Nia": {
       "building": "Hog_office_Nia",
@@ -45,7 +45,7 @@
       "global_W": 1.0,
       "n_windows": 725,
       "n_coherence_alerts": 80,
-      "n_variance_alerts": "7",
+      "n_variance_alerts": 7,
       "coherence_only_alerts": 80,
       "variance_only_alerts": 7,
       "both_alerts": 0,
@@ -54,7 +54,7 @@
       "min_delta": 0.0,
       "mean_M": 0.5045049085316642,
       "mean_W": 0.7245857230245625,
-      "elapsed_s": 0.2961759567260742
+      "elapsed_s": 0.2821991443634033
     },
     "Lamb_office_Vasiliki": {
       "building": "Lamb_office_Vasiliki",
@@ -72,7 +72,7 @@
       "global_W": 1.0,
       "n_windows": 725,
       "n_coherence_alerts": 137,
-      "n_variance_alerts": "4",
+      "n_variance_alerts": 4,
       "coherence_only_alerts": 135,
       "variance_only_alerts": 2,
       "both_alerts": 2,
@@ -81,7 +81,7 @@
       "min_delta": 0.0,
       "mean_M": 0.644671931574007,
       "mean_W": 0.7830149651426362,
-      "elapsed_s": 0.34254002571105957
+      "elapsed_s": 0.3268301486968994
     },
     "Rat_office_Avis": {
       "building": "Rat_office_Avis",
@@ -99,7 +99,7 @@
       "global_W": 0.9967320261437909,
       "n_windows": 725,
       "n_coherence_alerts": 53,
-      "n_variance_alerts": "12",
+      "n_variance_alerts": 12,
       "coherence_only_alerts": 49,
       "variance_only_alerts": 8,
       "both_alerts": 4,
@@ -108,7 +108,7 @@
       "min_delta": 0.0,
       "mean_M": 0.3897556087777534,
       "mean_W": 0.7479211044014553,
-      "elapsed_s": 0.29615306854248047
+      "elapsed_s": 0.2859201431274414
     }
   },
   "config": {
@@ -119,5 +119,5 @@
     "recovery_threshold": 0.4,
     "variance_zscore": 2.0
   },
-  "elapsed_s": 2.1256299018859863
+  "elapsed_s": 2.0269429683685303
 }

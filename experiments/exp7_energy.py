@@ -205,15 +205,15 @@ def analyze_building(
     var_ratios = [r["var_ratio"] for r in var_alerts]
 
     # --- Summary statistics ---
-    n_coherence_alerts = sum(alerts_coherence)
-    n_variance_alerts = sum(alerts_variance)
+    n_coherence_alerts = int(sum(alerts_coherence))
+    n_variance_alerts = int(sum(alerts_variance))
 
     # Coherence-only alerts (flagged by coherence but NOT by variance)
-    coherence_only = sum(1 for c, v in zip(alerts_coherence, alerts_variance) if c and not v)
+    coherence_only = int(sum(1 for c, v in zip(alerts_coherence, alerts_variance) if c and not v))
     # Variance-only alerts
-    variance_only = sum(1 for c, v in zip(alerts_coherence, alerts_variance) if not c and v)
+    variance_only = int(sum(1 for c, v in zip(alerts_coherence, alerts_variance) if not c and v))
     # Both alert
-    both_alert = sum(1 for c, v in zip(alerts_coherence, alerts_variance) if c and v)
+    both_alert = int(sum(1 for c, v in zip(alerts_coherence, alerts_variance) if c and v))
 
     # Global metrics over entire signal
     global_scores = coherence_score(signal, baseline)
