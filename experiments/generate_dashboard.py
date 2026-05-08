@@ -64,6 +64,14 @@ def generate_dashboard(results_dir: Path, output_path: Path):
         if plot_files:
             plots[f"exp{i}"] = img_to_base64(plot_files[0])
 
+    # Experiment 7 has multiple plots (per-building + heatmap)
+    exp7_building_plots = {}
+    for bld in ["hog_office_betsy", "hog_office_nia", "lamb_office_vasiliki", "rat_office_avis"]:
+        p = results_dir / f"exp7_{bld}.png"
+        if p.exists():
+            exp7_building_plots[bld] = img_to_base64(p)
+    exp7_heatmap = img_to_base64(results_dir / "exp7_heatmap.png")
+
     # Build summary metrics
     exp1 = results.get("exp1", {})
     exp3 = results.get("exp3", {})
@@ -116,8 +124,36 @@ def generate_dashboard(results_dir: Path, output_path: Path):
     # --- Experiment 6 comparison ---
     mc_stats = exp6.get("stats", {})
 
+    # --- Experiment 7 data ---
+    exp7 = results.get("exp7", {})
+    exp7_buildings = exp7.get("buildings", {})
+    exp7_rows = ""
+    total_coh_alerts = 0
+    total_var_alerts = 0
+    total_coh_only = 0
+    for bld_name, bld_data in exp7_buildings.items():
+        d_val = bld_data.get("global_delta", 0)
+        m_val = bld_data.get("global_M", 0)
+        w_val = bld_data.get("global_W", 0)
+        n_coh = int(bld_data.get("n_coherence_alerts", 0))
+        n_var = int(bld_data.get("n_variance_alerts", 0))
+        coh_only = int(bld_data.get("coherence_only_alerts", 0))
+        total_coh_alerts += n_coh
+        total_var_alerts += n_var
+        total_coh_only += coh_only
+        exp7_rows += f"""
+        <tr>
+            <td>{bld_name.replace('_', ' ')}</td>
+            <td style="font-weight: bold;">{bld_data.get('mean_delta', 0):.4f}</td>
+            <td style="color: {score_color(m_val)}; font-weight: bold;">{m_val:.3f}</td>
+            <td style="color: {score_color(w_val)}; font-weight: bold;">{w_val:.3f}</td>
+            <td style="color: #00d4ff;">{n_coh}</td>
+            <td style="color: #ff6b6b;">{n_var}</td>
+            <td style="color: #50fa7b; font-weight: bold;">{coh_only}</td>
+        </tr>"""
+
     # Total elapsed
-    total_elapsed = sum(results.get(f"exp{i}", {}).get("elapsed_s", 0) for i in range(1, 7))
+    total_elapsed = sum(results.get(f"exp{i}", {}).get("elapsed_s", 0) for i in range(1, 8))
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -370,8 +406,49 @@ def generate_dashboard(results_dir: Path, output_path: Path):
     </div>
 </div>
 
+<!-- Experiment 7 -->
+<div class="experiment">
+    <h2>Experiment 7 — Real Data Validation on Energy Systems</h2>
+    <div class="exp-desc">Applying the coherence framework to real hourly electricity load data from four office buildings.</div>
+
+    <div class="metrics-grid">
+        {build_metric_card("Buildings Analyzed", str(len(exp7_buildings)), "#00d4ff")}
+        {build_metric_card("Coherence Alerts", str(total_coh_alerts), "#00d4ff")}
+        {build_metric_card("Variance Alerts", str(total_var_alerts), "#ff6b6b")}
+        {build_metric_card("Coherence-Only", str(total_coh_only), "#50fa7b")}
+    </div>
+
+    <table>
+        <thead><tr><th>Building</th><th>Mean Delta</th><th>M (global)</th><th>W (global)</th><th>Coh. Alerts</th><th>Var. Alerts</th><th>Coh-Only</th></tr></thead>
+        <tbody>{exp7_rows}</tbody>
+    </table>
+
+    <p style="margin: 1rem 0; color: #8892b0;">The coherence framework detected <strong style="color: #50fa7b;">{total_coh_only}</strong>
+    instability episodes invisible to simple variance-based detection, validating the framework on real-world energy data.</p>
+
+    {"<h3 style='color: #bd93f9; margin-top: 1.5rem;'>Cross-Building Instability Heatmap</h3><img class='plot-img' src='" + exp7_heatmap + "'/>" if exp7_heatmap else ""}
+"""
+
+    # Add per-building plots for exp7
+    exp7_bld_names = {
+        "hog_office_betsy": "Hog office Betsy",
+        "hog_office_nia": "Hog office Nia",
+        "lamb_office_vasiliki": "Lamb office Vasiliki",
+        "rat_office_avis": "Rat office Avis",
+    }
+    for bld_key, bld_label in exp7_bld_names.items():
+        if bld_key in exp7_building_plots:
+            html += f"""
+    <details style="margin: 1rem 0;">
+        <summary style="cursor: pointer; color: #00d4ff; font-size: 0.95rem;">{bld_label} — detailed plots</summary>
+        <img class='plot-img' src='{exp7_building_plots[bld_key]}' style="margin-top: 0.5rem;"/>
+    </details>"""
+
+    html += """
+</div>
+
 <div class="footer">
-    Δ.72 Coherence Framework — allison-research — Generated from experiment suite v1.0
+    Δ.72 Coherence Framework — allison-research — Generated from experiment suite v1.0 + Exp 7 Energy Validation
 </div>
 
 </body>

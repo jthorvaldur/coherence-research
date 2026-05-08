@@ -10,3 +10,4 @@ __pycache__/
 # Large data files (use git-lfs or download separately)
 *.zip
 data/incoming/*.zip
+data/extracted/
