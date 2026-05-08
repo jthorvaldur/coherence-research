@@ -1,0 +1,30 @@
+name: allison-research
+language:
+  primary: python
+  secondary: []
+
+category: ai-agents
+owner: joel
+visibility: private
+
+uses:
+  vector_db: true
+  llm_agents: true
+  web_publish: false
+  github_actions: false
+
+allowed_llm_providers:
+  - anthropic
+  - local_ollama
+
+required_files:
+  - INTENT.md
+  - README.md
+  - CLAUDE.md
+  - .gitignore
+
+forbidden_files:
+  - .env
+  - secrets.json
+
+update_hooks: {}
