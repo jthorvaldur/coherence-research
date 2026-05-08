@@ -7,3 +7,6 @@ __pycache__/
 *.py[cod]
 .venv/
 .DS_Store
+# Large data files (use git-lfs or download separately)
+*.zip
+data/incoming/*.zip
