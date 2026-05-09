@@ -20,8 +20,8 @@
 |---|---------|-------------|-------------------|----------|
 | 6 | **Recurrence Quantification Analysis (RQA)** | Determinism, laminarity, trapping time from recurrence plots. Nonlinear dynamics proof that Δ captures real dynamical structure, not just linear correlation. | Validates P (pattern retention) through nonlinear dynamics | **Done** — `src/delta72/rqa.py` |
 | 7 | **Wavelet Coherence** | Multi-scale decomposition — shows whether coherence loss is hourly, daily, or seasonal. Turns single Δ into scale-resolved spectrum. | Enriches Δ with frequency decomposition | **Done** — `src/delta72/wavelet.py` |
-| 8 | **Lyapunov Exponents (local, rolling)** | Gold standard for dynamical stability. Positive = chaos. Rolling local Lyapunov gives rigorous "is this becoming chaotic?" metric. | Theoretical foundation for why Δ threshold exists | High |
-| 9 | **Change-Point Detection (PELT/BOCPD)** | Bayesian Online Change Point Detection. Direct competitor — benchmark Δ lead-time vs BOCPD detection time. | Benchmark comparison | High |
+| 8 | **Lyapunov Exponents (local, rolling)** | Gold standard for dynamical stability. Positive = chaos. Rolling local Lyapunov gives rigorous "is this becoming chaotic?" metric. | Theoretical foundation for why Δ threshold exists | **Done** — `src/delta72/lyapunov.py` |
+| 9 | **Change-Point Detection (BOCPD)** | Bayesian Online Change Point Detection. Direct competitor — benchmark Δ lead-time vs BOCPD detection time. | Benchmark comparison | **Done** — `src/delta72/bocpd.py` |
 
 ### Tier 2 — Powerful Extensions (Medium Priority)
 
