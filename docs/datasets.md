@@ -11,6 +11,7 @@
 | NASA C-MAPSS Turbofan | Aerospace | ~50 MB | Yes (RUL labels) | **Done** (Exp 8) | 100% detection, 186 cycles mean lead, 89% life remaining at alert |
 | SKAB (Skoltech Anomaly) | Industrial | ~10 MB | Yes (labeled faults) | **Done** (Exp 9) | 97.1% detection, F1=0.429, 415 samples mean lead |
 | UCI Household Power | Energy | ~130 MB | No | **Done** (Exp 10) | 432 coherence alerts, only 1 variance alert, 431 coherence-only |
+| PhysioNet ECG (MIT-BIH) | Biomedical | ~100 MB | Yes (arrhythmia labels) | **Done** (Exp 11) | 45 records, F1=0.386, 100% recall, 42 arrhythmic records |
 
 ## Queued
 
@@ -19,7 +20,7 @@
 | 1 | Yahoo S5 Anomaly | Infrastructure | ~200 MB | Yes (labeled anomalies) | Server metrics, synthetic + real, standard benchmark | [Yahoo Webscope](https://webscope.sandbox.yahoo.com/catalog.php?datatype=s&did=70) (requires registration) |
 | 5 | UCI Household Power | Energy | ~130 MB | No | 4 years, 1-minute resolution, 2M readings | [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/individual+household+electric+power+consumption) |
 | 6 | ERCOT Grid Frequency | Energy | ~500 MB+ | Yes (grid events) | Texas grid, 4-second resolution, directly relevant to energy work | [ERCOT.com](http://www.ercot.com/gridinfo/generation) |
-| 7 | PhysioNet ECG (MIT-BIH) | Biomedical | ~100 MB | Yes (arrhythmia labels) | Heart rhythm, labeled cardiac events, biological stability | [physionet.org](https://physionet.org/content/mitdb/) |
+| ~~7~~ | ~~PhysioNet ECG (MIT-BIH)~~ | ~~Biomedical~~ | ~~\~100 MB~~ | ~~Yes~~ | Moved to Completed | |
 | 8 | PhysioNet EEG (CHB-MIT) | Biomedical | ~23 GB | Yes (seizure labels) | Brain signals, pre-seizure detection, direct lead-time test | [physionet.org](https://physionet.org/content/chbmit/) |
 | 9 | IRIS Seismic | Geophysics | Variable | Yes (earthquake catalogs) | Seismograph data, pre-event coherence degradation | [ds.iris.edu](https://ds.iris.edu/ds/nodes/dmc/) |
 | 10 | Credit Card Fraud (Kaggle) | Financial | ~150 MB | Yes (fraud labels) | Transaction time series, anomaly detection benchmark | [Kaggle](https://www.kaggle.com/mlg-ulb/creditcardfraud) |
