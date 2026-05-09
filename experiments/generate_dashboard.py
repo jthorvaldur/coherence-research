@@ -682,6 +682,24 @@ def generate_dashboard(results_dir: Path, output_path: Path):
           <div class="metric-label">4 Years &middot; Household Electricity</div>
         </div>
       </a>
+      <a href="/r/research/ecg/" style="text-decoration: none;">
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--red);">ECG</div>
+          <div class="metric-label">45 Records &middot; Cardiac Arrhythmia</div>
+        </div>
+      </a>
+      <a href="/r/research/credit-card/" style="text-decoration: none;">
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--amber);">Fraud</div>
+          <div class="metric-label">284K Transactions &middot; Financial</div>
+        </div>
+      </a>
+      <a href="/r/research/math/" style="text-decoration: none;">
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--accent2);">Math</div>
+          <div class="metric-label">12 Modules &middot; Mathematical Foundations</div>
+        </div>
+      </a>
     </div>
   </div>
 
