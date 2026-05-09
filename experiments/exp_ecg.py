@@ -82,7 +82,13 @@ def normalize(v):
 
 
 def analyze_record(record_id: str) -> dict | None:
-    """Analyze a single MIT-BIH record using inter-channel coherence."""
+    """Analyze a single MIT-BIH record using rolling-baseline coherence.
+
+    Uses both channels independently: each channel's signal is compared to its
+    own rolling-mean baseline (like NAB experiment), then per-channel deltas are
+    averaged to a system-level score. This avoids the inter-lead morphology
+    mismatch that makes raw cross-channel correlation uninformative.
+    """
     try:
         record = wfdb.rdrecord(record_id, pn_dir="mitdb")
         ann = wfdb.rdann(record_id, "atr", pn_dir="mitdb")
@@ -90,23 +96,27 @@ def analyze_record(record_id: str) -> dict | None:
         print(f"    Skip {record_id}: {e}")
         return None
 
-    if record.p_signal.shape[1] < 2:
-        print(f"    Skip {record_id}: single channel only")
-        return None
-
-    # Use both channels — inter-channel coherence is the signal
-    ch1 = normalize(record.p_signal[:, 0].astype(np.float64))
-    ch2 = normalize(record.p_signal[:, 1].astype(np.float64))
+    n_channels = min(record.p_signal.shape[1], 2)
     fs = record.fs
-    n = len(ch1)
+    n = len(record.p_signal[:, 0])
 
-    baseline_end = int(BASELINE_SECONDS * fs)
+    # Build rolling-mean baseline per channel (like NAB approach)
+    rolling_window = int(BASELINE_SECONDS * fs)  # 30s rolling mean
+    channels = []
+    baselines = []
+    for c in range(n_channels):
+        ch = record.p_signal[:, c].astype(np.float64)
+        normed = normalize(ch)
+        # Centered rolling mean as baseline
+        kernel = np.ones(rolling_window) / rolling_window
+        baseline = np.convolve(normed, kernel, mode='same')
+        channels.append(normed)
+        baselines.append(baseline)
 
     # Map annotations to per-sample labels
     beat_labels = np.zeros(n, dtype=int)  # 0 = normal, 1 = abnormal
     for sample, symbol in zip(ann.sample, ann.symbol):
         if sample < n and symbol in ABNORMAL_BEATS:
-            # Mark region around abnormal beat
             start = max(0, sample - fs // 2)
             end = min(n, sample + fs // 2)
             beat_labels[start:end] = 1
@@ -120,20 +130,23 @@ def analyze_record(record_id: str) -> dict | None:
         if symbol in ABNORMAL_BEATS:
             arrhythmia_counts[symbol] = arrhythmia_counts.get(symbol, 0) + 1
 
-    # Rolling inter-channel coherence
+    # Rolling coherence: per-channel delta, then average
     deltas = []
     for start in range(0, n - WINDOW_SIZE + 1, STEP_SIZE):
         end = start + WINDOW_SIZE
-        scores = coherence_score(ch1[start:end], ch2[start:end])
+        ch_deltas = []
+        ch_ps = []
+        for c in range(n_channels):
+            scores = coherence_score(channels[c][start:end], baselines[c][start:end])
+            ch_deltas.append(scores["delta"])
+            ch_ps.append(scores["P"])
         mid = start + WINDOW_SIZE // 2
-
-        # Check if this window overlaps abnormal region
         is_abnormal = beat_labels[start:end].any()
 
         deltas.append({
             "mid": mid,
-            "delta": scores["delta"],
-            "P": scores["P"],
+            "delta": float(np.mean(ch_deltas)),
+            "P": float(np.mean(ch_ps)),
             "is_abnormal": bool(is_abnormal),
             "time_s": mid / fs,
         })

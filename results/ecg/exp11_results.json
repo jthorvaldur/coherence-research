@@ -1,7 +1,7 @@
 {
   "experiment": 11,
   "name": "PhysioNet MIT-BIH Arrhythmia Detection",
-  "dataset": "MIT-BIH Arrhythmia Database \u2014 43 records, 360 Hz, 2 channels",
+  "dataset": "MIT-BIH Arrhythmia Database \u2014 45 records, 360 Hz, 2 channels",
   "config": {
     "window_size": 1080,
     "step_size": 360,
@@ -9,20 +9,20 @@
     "baseline_seconds": 30
   },
   "stats": {
-    "n_records": 43,
-    "n_with_arrhythmia": 40,
+    "n_records": 45,
+    "n_with_arrhythmia": 42,
     "n_normal_only": 3,
-    "mean_f1": 0.346,
-    "mean_precision": 0.318,
-    "mean_recall": 0.677,
-    "mean_lead_s": 240.6,
-    "mean_delta_normal": 0.418,
-    "mean_delta_abnormal": 0.457,
+    "mean_f1": 0.341,
+    "mean_precision": 0.316,
+    "mean_recall": 0.673,
+    "mean_lead_s": 235.3,
+    "mean_delta_normal": 0.416,
+    "mean_delta_abnormal": 0.466,
     "arrhythmia_types": {
-      "A": 2542,
-      "V": 6528,
+      "A": 2546,
+      "V": 7065,
       "Q": 15,
-      "F": 801,
+      "F": 803,
       "a": 150,
       "J": 83,
       "!": 472,
@@ -67,6 +67,24 @@
         "precision": 0.095,
         "recall": 0.896,
         "lead_time_s": 12.0
+      },
+      {
+        "record_id": "106",
+        "n_beats": 2098,
+        "n_abnormal": 520,
+        "f1": 0.41,
+        "precision": 0.487,
+        "recall": 0.354,
+        "lead_time_s": 88.0
+      },
+      {
+        "record_id": "108",
+        "n_beats": 1824,
+        "n_abnormal": 23,
+        "f1": 0.088,
+        "precision": 0.047,
+        "recall": 0.812,
+        "lead_time_s": 0
       },
       {
         "record_id": "109",
@@ -421,5 +439,5 @@
       }
     ]
   },
-  "elapsed_s": 568.1
+  "elapsed_s": 611.2
 }
