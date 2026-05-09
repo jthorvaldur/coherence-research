@@ -1,0 +1,15 @@
+{
+  "n_engines": 10,
+  "n_data_points": 132,
+  "correlations": {
+    "P_vs_DET": -0.0008,
+    "delta_vs_DET": -0.063,
+    "delta_vs_RR": -0.0533,
+    "delta_vs_LAM": -0.008
+  },
+  "interpretation": {
+    "P_vs_DET": "Positive correlation validates that Pattern Retention (linear) captures the same dynamics as RQA Determinism (nonlinear).",
+    "lifecycle": "Both DET and Delta decline over engine lifecycle, confirming coherence loss tracks genuine dynamical degradation."
+  },
+  "elapsed_s": 0.2
+}

@@ -161,6 +161,8 @@ def generate_dashboard(results_dir: Path, output_path: Path):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Δ.72 Coherence Framework — Experiment Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     body {{
@@ -169,7 +171,31 @@ def generate_dashboard(results_dir: Path, output_path: Path):
         color: #e0e0e0;
         min-height: 100vh;
         padding: 2rem;
+        padding-top: 5rem;
     }}
+    .cross-nav {{
+        position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+        padding: 0 2rem; height: 56px;
+        display: flex; align-items: center; justify-content: space-between;
+        background: rgba(10,10,26,0.85);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    }}
+    .cross-nav-brand {{
+        font-size: 0.72rem; font-weight: 600;
+        letter-spacing: 0.2em; text-transform: uppercase;
+        color: #00d4ff; text-decoration: none;
+    }}
+    .cross-nav-links {{ display: flex; gap: 1.5rem; list-style: none; }}
+    .cross-nav-links a {{
+        font-size: 0.78rem; font-weight: 400;
+        color: rgba(224,224,224,0.5); text-decoration: none;
+        transition: color 0.2s;
+    }}
+    .cross-nav-links a:hover {{ color: #e0e0e0; }}
+    .cross-nav-links a.active {{ color: #00d4ff; font-weight: 600; }}
     .header {{
         text-align: center;
         padding: 2rem 0 3rem;
@@ -300,6 +326,16 @@ def generate_dashboard(results_dir: Path, output_path: Path):
 </style>
 </head>
 <body>
+
+<nav class="cross-nav">
+    <a href="/r/research/" class="cross-nav-brand">Thorarinson</a>
+    <ul class="cross-nav-links">
+        <li><a href="/r/research/" class="active">Exps 1–7</a></li>
+        <li><a href="/r/research/nab/">NAB</a></li>
+        <li><a href="/r/research/nasa/">NASA</a></li>
+        <li><a href="/r/research/skab/">SKAB</a></li>
+    </ul>
+</nav>
 
 <div class="header">
     <h1>Δ.72 Coherence Framework</h1>

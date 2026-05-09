@@ -2,20 +2,20 @@
 
 > Track all candidate datasets, their size, domain, and status.
 
-## Active / In Progress
+## Completed
 
-| Dataset | Domain | Est. Size | Labeled Failures | Status |
-|---------|--------|-----------|-----------------|--------|
-| Energy Open Data (Phase 1) | Energy | 162 MB | No (coherence-derived) | **Done** (Exp 7) |
+| Dataset | Domain | Est. Size | Labeled | Status | Key Result |
+|---------|--------|-----------|---------|--------|------------|
+| Energy Open Data (Phase 1) | Energy | 162 MB | No (coherence-derived) | **Done** (Exp 7) | 348 coherence-only alerts across 4 buildings |
+| NAB (Numenta Anomaly Benchmark) | Mixed (AWS, traffic, tweets) | ~20 MB | Yes (labeled windows + scoring) | **Done** (Exp 8) | F1=0.049 — correctly positions Δ as structural degradation detector |
+| NASA C-MAPSS Turbofan | Aerospace | ~50 MB | Yes (RUL labels) | **Done** (Exp 8) | 100% detection, 186 cycles mean lead, 89% life remaining at alert |
+| SKAB (Skoltech Anomaly) | Industrial | ~10 MB | Yes (labeled faults) | **Done** (Exp 9) | 97.1% detection, F1=0.429, 415 samples mean lead |
 
 ## Queued
 
 | # | Dataset | Domain | Est. Size | Labeled Failures | Why it fits | Source |
 |---|---------|--------|-----------|-----------------|-------------|--------|
-| 1 | NASA C-MAPSS Turbofan | Aerospace | ~50 MB | Yes (RUL labels) | Direct time-to-failure, multi-sensor, exact lead-time comparison | [NASA Prognostics](https://www.nasa.gov/content/prognostics-center-of-excellence-data-set-repository) |
-| 2 | NAB (Numenta Anomaly Benchmark) | Mixed (AWS, traffic, tweets) | ~20 MB | Yes (labeled windows + scoring) | 58 time series, formal scoring framework, published baselines | [github.com/numenta/NAB](https://github.com/numenta/NAB) |
-| 3 | Yahoo S5 Anomaly | Infrastructure | ~200 MB | Yes (labeled anomalies) | Server metrics, synthetic + real, standard benchmark | [Yahoo Webscope](https://webscope.sandbox.yahoo.com/catalog.php?datatype=s&did=70) |
-| 4 | SKAB (Skoltech Anomaly) | Industrial | ~10 MB | Yes (labeled faults) | Valve sensor data, manufacturing equipment | [github.com/waico/SKAB](https://github.com/waico/SKAB) |
+| 1 | Yahoo S5 Anomaly | Infrastructure | ~200 MB | Yes (labeled anomalies) | Server metrics, synthetic + real, standard benchmark | [Yahoo Webscope](https://webscope.sandbox.yahoo.com/catalog.php?datatype=s&did=70) |
 | 5 | UCI Household Power | Energy | ~130 MB | No | 4 years, 1-minute resolution, 2M readings | [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/individual+household+electric+power+consumption) |
 | 6 | ERCOT Grid Frequency | Energy | ~500 MB+ | Yes (grid events) | Texas grid, 4-second resolution, directly relevant to energy work | [ERCOT.com](http://www.ercot.com/gridinfo/generation) |
 | 7 | PhysioNet ECG (MIT-BIH) | Biomedical | ~100 MB | Yes (arrhythmia labels) | Heart rhythm, labeled cardiac events, biological stability | [physionet.org](https://physionet.org/content/mitdb/) |

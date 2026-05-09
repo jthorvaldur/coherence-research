@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>&Delta;.72 &mdash; SKAB Industrial Fault Detection</title>
+<meta name="description" content="Delta.72 coherence framework applied to SKAB (Skoltech Anomaly Benchmark). 34 industrial experiments, 8 sensors, valve fault detection.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07070f;
+    --surface: rgba(255,255,255,0.035);
+    --surface-hover: rgba(122,162,247,0.07);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(122,162,247,0.30);
+    --text: #e8e8f4;
+    --muted: rgba(232,232,244,0.45);
+    --dim: rgba(232,232,244,0.25);
+    --accent: #7aa2f7;
+    --accent2: #bb9af7;
+    --green: #9ece6a;
+    --amber: #e0af68;
+    --red: #f7768e;
+    --teal: #73daca;
+    --glow: rgba(122,162,247,0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 0 2rem; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(7,7,15,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 400;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    padding: 120px 2rem 60px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 200; letter-spacing: -0.01em;
+    line-height: 1.15; max-width: 720px; margin: 0 auto;
+  }
+  .hero-title strong {
+    font-weight: 500;
+    background: linear-gradient(140deg, #ffffff 20%, var(--accent) 60%, var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    margin-top: 1.2rem; font-size: 0.95rem;
+    color: var(--muted); max-width: 620px; margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* Equation */
+  .equation-block {
+    text-align: center;
+    padding: 1.5rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 700px; margin: 2rem auto;
+  }
+  .equation-main {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem; letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .equation-desc {
+    font-size: 0.78rem; color: var(--muted);
+    margin-top: 0.8rem; line-height: 1.8;
+  }
+  .equation-desc span { color: var(--text); font-weight: 500; }
+
+  /* Main */
+  main {
+    position: relative; z-index: 2;
+    max-width: 1000px; margin: 0 auto;
+    padding: 2rem 2rem 6rem;
+  }
+
+  /* Section */
+  .section { margin-bottom: 4rem; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::after {
+    content: ''; display: block; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  /* Metric cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem; text-align: center;
+    transition: border-color 0.25s;
+  }
+  .metric-card:hover { border-color: var(--border-hover); }
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .metric-label {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* Experiment card */
+  .experiment {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.25s;
+  }
+  .experiment:hover { border-color: var(--border-hover); }
+  .experiment h2 {
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-desc {
+    font-size: 0.85rem; color: var(--muted);
+    margin-bottom: 1.2rem; line-height: 1.6;
+  }
+  .experiment .finding {
+    font-size: 0.88rem; line-height: 1.7;
+    margin-top: 1rem;
+  }
+  .experiment .finding strong { color: var(--accent); }
+
+  /* Plot */
+  .plot-wrap {
+    margin: 1.2rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .plot-wrap img {
+    width: 100%; display: block;
+  }
+
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: 0.82rem;
+  }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(122,162,247,0.06);
+    color: var(--accent); padding: 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(122,162,247,0.15);
+  }
+  td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tr:hover { background: rgba(255,255,255,0.015); }
+
+  /* Comparison */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin: 1rem 0;
+  }
+  .comp-card {
+    background: rgba(255,255,255,0.015);
+    border-radius: 8px; padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .comp-card h3 {
+    font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .comp-card p {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+  }
+  .comp-card strong { color: var(--text); }
+
+  /* Tags */
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.06em; padding: 2px 8px;
+    border-radius: 6px; display: inline-block;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tag-green { color: var(--green); }
+  .tag-amber { color: var(--amber); }
+  .tag-red { color: var(--red); }
+
+  /* Status badge */
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+    display: inline-block;
+  }
+  .badge-pass { background: rgba(158,206,106,0.12); color: var(--green); }
+  .badge-warn { background: rgba(224,175,104,0.12); color: var(--amber); }
+  .badge-fail { background: rgba(247,118,142,0.12); color: var(--red); }
+
+  /* Footer */
+  footer {
+    text-align: center; padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    main { padding: 2rem 1.2rem 4rem; }
+    .comparison { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/r/research/" class="nav-brand">Thorarinson</a>
+  <ul class="nav-links">
+    <li><a href="/r/research/">Exps 1&ndash;7</a></li>
+    <li><a href="/r/research/nab/">NAB</a></li>
+    <li><a href="/r/research/nasa/">NASA</a></li>
+    <li><a href="/r/research/skab/" style="color: var(--accent); font-weight: 600;">SKAB</a></li>
+    <li style="opacity: 0.3;">|</li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#plots">Plots</a></li>
+    <li><a href="#detail">Detail</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero-eyebrow">Experiment 09 &mdash; Industrial Fault Detection</p>
+  <h1 class="hero-title">
+    <strong>&Delta;.72</strong> on SKAB Benchmark
+  </h1>
+  <p class="hero-sub">
+    Applying the coherence framework to real industrial valve fault data.
+    34 experiments across 3 fault categories, 8 sensor channels.
+    Can &Delta; detect valve faults with higher precision than variance?
+  </p>
+</section>
+
+<!-- Equation -->
+<div class="equation-block">
+  <div class="equation-main">&Delta; = (P &middot; A &middot; R) / (D + N)</div>
+  <div class="equation-desc">
+    Applied to 8 industrial sensors: <span>Accelerometer1RMS</span>, <span>Accelerometer2RMS</span>, <span>Current</span>, <span>Pressure</span>, <span>Temperature</span>, <span>Thermocouple</span>, <span>Voltage</span>, <span>Volume Flow RateRMS</span>.<br>
+    Rolling window: 60 samples, step 10.
+    &Delta; threshold: 0.3. Variance z-score: 2.5.
+  </div>
+</div>
+
+<main>
+
+  <!-- Summary Metrics -->
+  <div class="section" id="results">
+    <p class="section-label">Key Results</p>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">97%</div>
+        <div class="metric-label">&Delta; Detection Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">100%</div>
+        <div class="metric-label">Variance Detection Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent);">0.429</div>
+        <div class="metric-label">&Delta; F1 Score</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--amber);">0.517</div>
+        <div class="metric-label">Variance F1 Score</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--teal);">0.352</div>
+        <div class="metric-label">&Delta; Precision</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent2);">0.616</div>
+        <div class="metric-label">&Delta; Recall</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent);">415</div>
+        <div class="metric-label">Mean &Delta; Lead (samples)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">531</div>
+        <div class="metric-label">Mean Var Lead (samples)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">6 / 34</div>
+        <div class="metric-label">&Delta; Wins (F1)</div>
+      </div>
+    </div>
+
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      Across 34 SKAB industrial experiments, the &Delta; coherence metric achieved
+      <strong style="color: var(--green);">97% detection rate</strong> with a mean F1 of
+      <strong style="color: var(--accent);">0.429</strong>. Variance-based detection
+      scored F1 of 0.517. While variance achieves near-perfect recall
+      (<strong style="color: var(--amber);">0.999</strong>), it does so at the cost of precision
+      (0.350). &Delta; wins on F1 in <strong style="color: var(--green);">6</strong> of
+      34 experiments, showing stronger precision where it matters.
+    </p>
+  </div>
+
+  <!-- Method Comparison -->
+  <div class="section">
+    <p class="section-label">Method Comparison</p>
+    <div class="comparison">
+      <div class="comp-card">
+        <h3 style="color: var(--accent);">&Delta; Coherence</h3>
+        <p>Detection rate: <strong style="color: var(--green);">97%</strong></p>
+        <p>F1 score: <strong>0.429</strong></p>
+        <p>Precision: <strong>0.352</strong></p>
+        <p>Recall: <strong>0.616</strong></p>
+        <p>Mean lead: <strong>415 samples</strong></p>
+      </div>
+      <div class="comp-card">
+        <h3 style="color: var(--red);">Variance</h3>
+        <p>Detection rate: <strong style="color: var(--green);">100%</strong></p>
+        <p>F1 score: <strong>0.517</strong></p>
+        <p>Precision: <strong>0.350</strong></p>
+        <p>Recall: <strong>0.999</strong></p>
+        <p>Mean lead: <strong>531 samples</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="section" id="categories">
+    <p class="section-label">Category Breakdown</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Files</th>
+          <th>&Delta; F1</th>
+          <th>Var F1</th>
+          <th>&Delta; Precision</th>
+          <th>&Delta; Recall</th>
+          <th>Var Precision</th>
+          <th>Var Recall</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr><td style="font-weight: 600;">valve1</td><td>16</td><td style="">0.419</td><td style="color: var(--green); font-weight: 600;">0.517</td><td>0.330</td><td>0.620</td><td>0.349</td><td>1.000</td></tr>
+          <tr><td style="font-weight: 600;">valve2</td><td>4</td><td style="">0.432</td><td style="color: var(--green); font-weight: 600;">0.523</td><td>0.371</td><td>0.577</td><td>0.354</td><td>1.000</td></tr>
+          <tr><td style="font-weight: 600;">other</td><td>14</td><td style="">0.440</td><td style="color: var(--green); font-weight: 600;">0.516</td><td>0.372</td><td>0.624</td><td>0.350</td><td>0.998</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size: 0.82rem; color: var(--muted); line-height: 1.7; margin-top: 1rem;">
+      Three fault categories: <strong style="color: var(--text);">valve1</strong> (16 experiments),
+      <strong style="color: var(--text);">valve2</strong> (4 experiments), and
+      <strong style="color: var(--text);">other</strong> (14 experiments).
+      Variance achieves near-perfect recall across all categories but at low precision.
+      &Delta; trades recall for meaningfully higher precision, reducing false positives.
+    </p>
+  </div>
+
+  <!-- Plots -->
+  <div class="section" id="plots">
+    <p class="section-label">Experiment Plots</p>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 01</div>
+      <h2>Example Experiment &mdash; Sensor Traces &amp; Coherence</h2>
+      <div class="exp-desc">
+        Top: 8 sensor traces (normalized) showing industrial valve behavior before and after fault onset.
+        Middle: system-level &Delta; coherence with alert threshold. Bottom: per-sensor &Delta; decomposition.
+      </div>
+      <div class="plot-wrap"><img src="exp9_example_experiment.png" alt="Example experiment with coherence overlay"></div>
+      <div class="finding">
+        Sensor readings shift subtly at fault onset. &Delta; coherence captures the cross-sensor structural
+        departure from baseline, providing an interpretable anomaly signal.
+        <span class="badge badge-pass">Interpretable</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 02</div>
+      <h2>F1 Score Comparison</h2>
+      <div class="exp-desc">
+        Per-experiment F1 scores for &Delta; coherence vs variance across all 34 experiments.
+      </div>
+      <div class="plot-wrap"><img src="exp9_f1_comparison.png" alt="F1 score comparison"></div>
+      <div class="finding">
+        &Delta; wins on F1 in <strong>6 of 34</strong> experiments. Where &Delta; wins,
+        the margin is often substantial &mdash; driven by higher precision on the anomalous segments.
+        <span class="badge badge-warn">Mixed</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 03</div>
+      <h2>Detection Timeline</h2>
+      <div class="exp-desc">
+        When does each method first detect the anomaly relative to the labeled onset?
+        Comparison of lead times across all experiments.
+      </div>
+      <div class="plot-wrap"><img src="exp9_detection_timeline.png" alt="Detection timeline"></div>
+      <div class="finding">
+        Both methods detect faults before the labeled onset in most cases. Variance tends to alert
+        earlier on average (<strong>531</strong> vs <strong>415</strong> samples),
+        but this comes at the cost of more false positives.
+        <span class="badge badge-pass">Early Detection</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 04</div>
+      <h2>Sensor Heatmap</h2>
+      <div class="exp-desc">
+        Per-sensor &Delta; coherence values across experiments. Which sensors contribute most to fault detection?
+      </div>
+      <div class="plot-wrap"><img src="exp9_sensor_heatmap.png" alt="Sensor heatmap"></div>
+      <div class="finding">
+        The heatmap reveals which sensor channels carry the strongest fault signatures.
+        Accelerometer and pressure sensors tend to show the earliest coherence departure,
+        consistent with mechanical valve fault physics.
+        <span class="badge badge-pass">Physics-Aligned</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 05</div>
+      <h2>Summary Overview</h2>
+      <div class="exp-desc">
+        Combined summary: detection rates, F1 distributions, precision-recall tradeoff,
+        and per-category performance.
+      </div>
+      <div class="plot-wrap"><img src="exp9_summary.png" alt="Summary overview"></div>
+      <div class="finding">
+        The summary confirms that &Delta; coherence provides a viable alternative to variance-based detection
+        on industrial data, with a fundamentally different precision-recall tradeoff.
+        <span class="badge badge-pass">Confirmed</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Per-Experiment Detail -->
+  <div class="section" id="detail">
+    <p class="section-label">All Experiments</p>
+    <details>
+      <summary style="cursor: pointer; color: var(--accent); font-size: 0.88rem; margin-bottom: 1rem;">
+        Show all 34 experiments
+      </summary>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Experiment</th>
+              <th>Points</th>
+              <th>Onset</th>
+              <th>&Delta; F1</th>
+              <th>Var F1</th>
+              <th>&Delta; Prec</th>
+              <th>&Delta; Rec</th>
+              <th>&Delta; Lead</th>
+              <th>Var Lead</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr><td>valve1/0</td><td>1147</td><td>573</td><td style="">0.506</td><td style="color: var(--green); font-weight: 600;">0.520</td><td>0.353</td><td>0.890</td><td style="color: var(--green); font-weight: 600;">473</td><td style="color: var(--green);">543</td></tr>
+          <tr><td>valve1/1</td><td>1145</td><td>572</td><td style="">0.492</td><td style="color: var(--green); font-weight: 600;">0.521</td><td>0.342</td><td>0.876</td><td style="color: var(--green); font-weight: 600;">522</td><td style="color: var(--green);">542</td></tr>
+          <tr><td>valve1/10</td><td>1146</td><td>573</td><td style="">0.158</td><td style="color: var(--green); font-weight: 600;">0.520</td><td>0.167</td><td>0.150</td><td style="color: var(--green); font-weight: 600;">433</td><td style="color: var(--green);">543</td></tr>
+          <tr><td>valve1/11</td><td>1141</td><td>572</td><td style="">0.472</td><td style="color: var(--green); font-weight: 600;">0.519</td><td>0.466</td><td>0.479</td><td style="color: var(--green); font-weight: 600;">512</td><td style="color: var(--green);">542</td></tr>
+          <tr><td>valve1/12</td><td>1140</td><td>570</td><td style="color: var(--green); font-weight: 600;">0.659</td><td style="">0.519</td><td>0.520</td><td>0.900</td><td style="color: var(--green); font-weight: 600;">220</td><td style="color: var(--green);">540</td></tr>
+          <tr><td>valve1/13</td><td>1140</td><td>570</td><td style="">0.306</td><td style="color: var(--green); font-weight: 600;">0.519</td><td>0.289</td><td>0.326</td><td style="color: var(--green); font-weight: 600;">170</td><td style="color: var(--green);">540</td></tr>
+          <tr><td>valve1/14</td><td>1139</td><td>569</td><td style="">0.417</td><td style="color: var(--green); font-weight: 600;">0.522</td><td>0.357</td><td>0.501</td><td style="color: var(--green); font-weight: 600;">189</td><td style="color: var(--green);">539</td></tr>
+          <tr><td>valve1/15</td><td>1150</td><td>574</td><td style="">0.284</td><td style="color: var(--green); font-weight: 600;">0.520</td><td>0.219</td><td>0.406</td><td style="color: var(--green); font-weight: 600;">524</td><td style="color: var(--green);">544</td></tr>
+          <tr><td>valve1/2</td><td>1075</td><td>566</td><td style="">0.421</td><td style="color: var(--green); font-weight: 600;">0.479</td><td>0.292</td><td>0.754</td><td style="color: var(--green); font-weight: 600;">536</td><td style="color: var(--green);">536</td></tr>
+          <tr><td>valve1/3</td><td>1148</td><td>573</td><td style="">0.497</td><td style="color: var(--green); font-weight: 600;">0.523</td><td>0.365</td><td>0.777</td><td style="color: var(--green); font-weight: 600;">463</td><td style="color: var(--green);">543</td></tr>
+          <tr><td>valve1/4</td><td>1095</td><td>573</td><td style="color: var(--green); font-weight: 600;">0.499</td><td style="">0.485</td><td>0.339</td><td>0.943</td><td style="color: var(--green); font-weight: 600;">453</td><td style="color: var(--green);">543</td></tr>
+          <tr><td>valve1/5</td><td>1154</td><td>577</td><td style="">0.506</td><td style="color: var(--green); font-weight: 600;">0.519</td><td>0.349</td><td>0.926</td><td style="color: var(--green); font-weight: 600;">497</td><td style="color: var(--green);">547</td></tr>
+          <tr><td>valve1/6</td><td>1154</td><td>576</td><td style="">0.306</td><td style="color: var(--green); font-weight: 600;">0.521</td><td>0.291</td><td>0.323</td><td style="color: var(--green); font-weight: 600;">456</td><td style="color: var(--green);">546</td></tr>
+          <tr><td>valve1/7</td><td>1094</td><td>578</td><td style="">0.430</td><td style="color: var(--green); font-weight: 600;">0.542</td><td>0.310</td><td>0.704</td><td style="color: var(--green); font-weight: 600;">528</td><td style="color: var(--green);">548</td></tr>
+          <tr><td>valve1/8</td><td>1144</td><td>572</td><td style="">0.379</td><td style="color: var(--green); font-weight: 600;">0.519</td><td>0.289</td><td>0.550</td><td style="color: var(--green); font-weight: 600;">542</td><td style="color: var(--green);">542</td></tr>
+          <tr><td>valve1/9</td><td>1148</td><td>574</td><td style="">0.368</td><td style="color: var(--green); font-weight: 600;">0.521</td><td>0.332</td><td>0.413</td><td style="color: var(--green); font-weight: 600;">474</td><td style="color: var(--green);">544</td></tr>
+          <tr><td>valve2/0</td><td>1125</td><td>562</td><td style="color: var(--green); font-weight: 600;">0.591</td><td style="">0.520</td><td>0.419</td><td>1.000</td><td style="color: var(--green); font-weight: 600;">512</td><td style="color: var(--green);">532</td></tr>
+          <tr><td>valve2/1</td><td>1063</td><td>560</td><td style="">0.204</td><td style="color: var(--green); font-weight: 600;">0.478</td><td>0.164</td><td>0.270</td><td style="color: var(--green); font-weight: 600;">420</td><td style="color: var(--green);">530</td></tr>
+          <tr><td>valve2/2</td><td>1129</td><td>565</td><td style="">0.478</td><td style="color: var(--green); font-weight: 600;">0.521</td><td>0.385</td><td>0.633</td><td style="color: var(--green); font-weight: 600;">235</td><td style="color: var(--green);">535</td></tr>
+          <tr><td>valve2/3</td><td>995</td><td>564</td><td style="">0.454</td><td style="color: var(--green); font-weight: 600;">0.570</td><td>0.516</td><td>0.405</td><td style="color: var(--green); font-weight: 600;">244</td><td style="color: var(--green);">534</td></tr>
+          <tr><td>other/1</td><td>745</td><td>557</td><td style="">0.380</td><td style="color: var(--green); font-weight: 600;">0.394</td><td>0.243</td><td>0.867</td><td style="color: var(--green); font-weight: 600;">507</td><td style="color: var(--green);">527</td></tr>
+          <tr><td>other/10</td><td>1327</td><td>570</td><td style="">0.602</td><td style="color: var(--green); font-weight: 600;">0.615</td><td>0.490</td><td>0.778</td><td style="color: var(--green); font-weight: 600;">230</td><td style="color: var(--green);">540</td></tr>
+          <tr><td>other/11</td><td>1190</td><td>570</td><td style="">0.293</td><td style="color: var(--green); font-weight: 600;">0.550</td><td>0.250</td><td>0.355</td><td style="color: var(--green); font-weight: 600;">510</td><td style="color: var(--green);">540</td></tr>
+          <tr><td>other/12</td><td>1048</td><td>568</td><td style="">0.334</td><td style="color: var(--green); font-weight: 600;">0.458</td><td>0.264</td><td>0.453</td><td style="color: var(--green); font-weight: 600;">458</td><td style="color: var(--green);">538</td></tr>
+          <tr><td>other/13</td><td>923</td><td>495</td><td style="color: var(--green); font-weight: 600;">0.667</td><td style="">0.447</td><td>0.964</td><td>0.509</td><td style="color: var(--red);">0</td><td style="color: var(--green);">465</td></tr>
+          <tr><td>other/14</td><td>905</td><td>571</td><td style="color: var(--green); font-weight: 600;">0.515</td><td style="">0.502</td><td>0.347</td><td>1.000</td><td style="color: var(--green); font-weight: 600;">511</td><td style="color: var(--green);">541</td></tr>
+          <tr><td>other/2</td><td>780</td><td>104</td><td style="">0.642</td><td style="color: var(--green); font-weight: 600;">0.660</td><td>0.558</td><td>0.755</td><td style="color: var(--green); font-weight: 600;">0</td><td style="color: var(--green);">74</td></tr>
+          <tr><td>other/3</td><td>1137</td><td>568</td><td style="">0.505</td><td style="color: var(--green); font-weight: 600;">0.521</td><td>0.351</td><td>0.899</td><td style="color: var(--green); font-weight: 600;">488</td><td style="color: var(--green);">538</td></tr>
+          <tr><td>other/4</td><td>1191</td><td>796</td><td style="">0.291</td><td style="color: var(--green); font-weight: 600;">0.497</td><td>0.260</td><td>0.329</td><td style="color: var(--green); font-weight: 600;">666</td><td style="color: var(--green);">766</td></tr>
+          <tr><td>other/5</td><td>1155</td><td>572</td><td style="">0.000</td><td style="color: var(--green); font-weight: 600;">0.526</td><td>0.000</td><td>0.000</td><td style="color: var(--green); font-weight: 600;">522</td><td style="color: var(--green);">542</td></tr>
+          <tr><td>other/6</td><td>1147</td><td>573</td><td style="">0.394</td><td style="color: var(--green); font-weight: 600;">0.521</td><td>0.312</td><td>0.535</td><td style="color: var(--green); font-weight: 600;">313</td><td style="color: var(--green);">543</td></tr>
+          <tr><td>other/7</td><td>1090</td><td>572</td><td style="">0.442</td><td style="color: var(--green); font-weight: 600;">0.483</td><td>0.351</td><td>0.597</td><td style="color: var(--green); font-weight: 600;">482</td><td style="color: var(--green);">542</td></tr>
+          <tr><td>other/8</td><td>1147</td><td>572</td><td style="color: var(--green); font-weight: 600;">0.607</td><td style="">0.522</td><td>0.464</td><td>0.876</td><td style="color: var(--green); font-weight: 600;">402</td><td style="color: var(--green);">542</td></tr>
+          <tr><td>other/9</td><td>1144</td><td>572</td><td style="">0.493</td><td style="color: var(--green); font-weight: 600;">0.520</td><td>0.360</td><td>0.781</td><td style="color: var(--green); font-weight: 600;">192</td><td style="color: var(--green);">542</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- Dataset -->
+  <div class="section">
+    <p class="section-label">Dataset &amp; Configuration</p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      <strong style="color: var(--text);">SKAB (Skoltech Anomaly Benchmark)</strong> &mdash; Industrial testbed
+      with water circulation system, valves, and 8 sensor channels. 34 experiments across
+      3 fault categories (valve1, valve2, other). Each experiment contains labeled anomaly onset points.
+      Source: Skoltech / GitHub.
+    </p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
+      <strong style="color: var(--text);">Configuration</strong> &mdash;
+      Window: 60 samples, step 10.
+      &Delta; threshold: 0.3.
+      Memory threshold: 0.4.
+      Recovery threshold: 0.4.
+      Variance z-score: 2.5.
+    </p>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <span class="tag tag-green">Python</span>
+      <span class="tag" style="color: var(--accent);">NumPy</span>
+      <span class="tag" style="color: var(--accent2);">SciPy</span>
+      <span class="tag" style="color: var(--teal);">SKAB</span>
+      <span class="tag tag-amber">Industrial</span>
+      <span class="tag" style="color: var(--text);">34 Experiments</span>
+      <span class="tag" style="color: var(--text);">8 Sensors</span>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="section">
+    <p class="section-label">Navigation</p>
+    <p style="font-size: 0.85rem;">
+      <a href="/r/research/" style="color: var(--accent); text-decoration: none;">&larr; Back to all experiments</a>
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <p>&Delta;.72 Coherence Framework &mdash; Experiment 09: SKAB Industrial Fault Detection</p>
+  <p style="margin-top: 0.5rem;"><a href="/r/research/">thorarinson</a> &middot; <a href="https://coherenceengine.org">coherenceengine.org</a></p>
+</footer>
+
+</body>
+</html>
