@@ -1,7 +1,7 @@
 {
   "experiment": 11,
   "name": "PhysioNet MIT-BIH Arrhythmia Detection",
-  "dataset": "MIT-BIH Arrhythmia Database \u2014 45 records, 360 Hz, 2 channels",
+  "dataset": "MIT-BIH Arrhythmia Database \u2014 43 records, 360 Hz, 2 channels",
   "config": {
     "window_size": 1080,
     "step_size": 360,
@@ -9,20 +9,20 @@
     "baseline_seconds": 30
   },
   "stats": {
-    "n_records": 45,
-    "n_with_arrhythmia": 42,
+    "n_records": 43,
+    "n_with_arrhythmia": 40,
     "n_normal_only": 3,
-    "mean_f1": 0.386,
-    "mean_precision": 0.302,
-    "mean_recall": 1.0,
-    "mean_lead_s": 281.0,
-    "mean_delta_normal": 0.001,
-    "mean_delta_abnormal": 0.0,
+    "mean_f1": 0.346,
+    "mean_precision": 0.318,
+    "mean_recall": 0.677,
+    "mean_lead_s": 240.6,
+    "mean_delta_normal": 0.418,
+    "mean_delta_abnormal": 0.457,
     "arrhythmia_types": {
-      "A": 2546,
-      "V": 7065,
+      "A": 2542,
+      "V": 6528,
       "Q": 15,
-      "F": 803,
+      "F": 801,
       "a": 150,
       "J": 83,
       "!": 472,
@@ -36,55 +36,37 @@
         "record_id": "100",
         "n_beats": 2274,
         "n_abnormal": 34,
-        "f1": 0.137,
-        "precision": 0.074,
-        "recall": 1.0,
-        "lead_time_s": 2.0
+        "f1": 0.033,
+        "precision": 0.062,
+        "recall": 0.023,
+        "lead_time_s": 0
       },
       {
         "record_id": "101",
         "n_beats": 1874,
         "n_abnormal": 5,
-        "f1": 0.022,
-        "precision": 0.011,
-        "recall": 1.0,
-        "lead_time_s": 315.0
+        "f1": 0.019,
+        "precision": 0.01,
+        "recall": 0.8,
+        "lead_time_s": 316.0
       },
       {
         "record_id": "103",
         "n_beats": 2091,
         "n_abnormal": 2,
-        "f1": 0.009,
-        "precision": 0.004,
+        "f1": 0.05,
+        "precision": 0.026,
         "recall": 1.0,
-        "lead_time_s": 1158.0
+        "lead_time_s": 71.0
       },
       {
         "record_id": "105",
         "n_beats": 2691,
         "n_abnormal": 46,
-        "f1": 0.184,
-        "precision": 0.102,
-        "recall": 1.0,
-        "lead_time_s": 11.0
-      },
-      {
-        "record_id": "106",
-        "n_beats": 2098,
-        "n_abnormal": 520,
-        "f1": 0.671,
-        "precision": 0.504,
-        "recall": 1.0,
-        "lead_time_s": 87.0
-      },
-      {
-        "record_id": "108",
-        "n_beats": 1824,
-        "n_abnormal": 23,
-        "f1": 0.09,
-        "precision": 0.047,
-        "recall": 1.0,
-        "lead_time_s": 7.0
+        "f1": 0.171,
+        "precision": 0.095,
+        "recall": 0.896,
+        "lead_time_s": 12.0
       },
       {
         "record_id": "109",
@@ -99,37 +81,37 @@
         "record_id": "111",
         "n_beats": 2133,
         "n_abnormal": 1,
-        "f1": 0.004,
+        "f1": 0.003,
         "precision": 0.002,
-        "recall": 1.0,
-        "lead_time_s": 514.0
+        "recall": 0.75,
+        "lead_time_s": 515.0
       },
       {
         "record_id": "112",
         "n_beats": 2550,
         "n_abnormal": 2,
-        "f1": 0.009,
+        "f1": 0.008,
         "precision": 0.004,
-        "recall": 1.0,
-        "lead_time_s": 700.0
+        "recall": 0.875,
+        "lead_time_s": 701.0
       },
       {
         "record_id": "113",
         "n_beats": 1796,
         "n_abnormal": 6,
-        "f1": 0.026,
-        "precision": 0.013,
-        "recall": 1.0,
-        "lead_time_s": 20.0
+        "f1": 0.023,
+        "precision": 0.012,
+        "recall": 0.75,
+        "lead_time_s": 17.0
       },
       {
         "record_id": "114",
         "n_beats": 1890,
         "n_abnormal": 59,
-        "f1": 0.203,
-        "precision": 0.113,
-        "recall": 1.0,
-        "lead_time_s": 81.0
+        "f1": 0.086,
+        "precision": 0.052,
+        "recall": 0.245,
+        "lead_time_s": 82.0
       },
       {
         "record_id": "115",
@@ -144,28 +126,28 @@
         "record_id": "116",
         "n_beats": 2421,
         "n_abnormal": 110,
-        "f1": 0.37,
-        "precision": 0.227,
-        "recall": 1.0,
-        "lead_time_s": 94.0
+        "f1": 0.371,
+        "precision": 0.228,
+        "recall": 0.993,
+        "lead_time_s": 95.0
       },
       {
         "record_id": "117",
         "n_beats": 1539,
         "n_abnormal": 1,
-        "f1": 0.004,
-        "precision": 0.002,
-        "recall": 1.0,
-        "lead_time_s": 723.0
+        "f1": 0.4,
+        "precision": 0.333,
+        "recall": 0.5,
+        "lead_time_s": 1.0
       },
       {
         "record_id": "118",
         "n_beats": 2301,
         "n_abnormal": 112,
-        "f1": 0.363,
-        "precision": 0.222,
-        "recall": 1.0,
-        "lead_time_s": 27.0
+        "f1": 0.268,
+        "precision": 0.246,
+        "recall": 0.295,
+        "lead_time_s": 28.0
       },
       {
         "record_id": "119",
@@ -183,7 +165,7 @@
         "f1": 0.007,
         "precision": 0.003,
         "recall": 1.0,
-        "lead_time_s": 1008.0
+        "lead_time_s": 1009.0
       },
       {
         "record_id": "122",
@@ -198,55 +180,55 @@
         "record_id": "123",
         "n_beats": 1519,
         "n_abnormal": 3,
-        "f1": 0.013,
-        "precision": 0.007,
-        "recall": 1.0,
-        "lead_time_s": 420.0
+        "f1": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "lead_time_s": 319.0
       },
       {
         "record_id": "124",
         "n_beats": 1634,
         "n_abnormal": 83,
-        "f1": 0.146,
-        "precision": 0.079,
-        "recall": 1.0,
-        "lead_time_s": 283.0
+        "f1": 0.032,
+        "precision": 0.021,
+        "recall": 0.07,
+        "lead_time_s": 282.0
       },
       {
         "record_id": "200",
         "n_beats": 2792,
         "n_abnormal": 858,
-        "f1": 0.893,
-        "precision": 0.807,
-        "recall": 0.999,
+        "f1": 0.744,
+        "precision": 0.778,
+        "recall": 0.713,
         "lead_time_s": 0
       },
       {
         "record_id": "201",
         "n_beats": 2039,
         "n_abnormal": 328,
-        "f1": 0.715,
-        "precision": 0.556,
-        "recall": 1.0,
-        "lead_time_s": 45.0
+        "f1": 0.692,
+        "precision": 0.543,
+        "recall": 0.951,
+        "lead_time_s": 46.0
       },
       {
         "record_id": "202",
         "n_beats": 2146,
         "n_abnormal": 75,
-        "f1": 0.191,
-        "precision": 0.105,
-        "recall": 1.0,
-        "lead_time_s": 25.0
+        "f1": 0.189,
+        "precision": 0.104,
+        "recall": 0.989,
+        "lead_time_s": 26.0
       },
       {
         "record_id": "203",
         "n_beats": 3108,
         "n_abnormal": 451,
-        "f1": 0.724,
-        "precision": 0.568,
-        "recall": 1.0,
-        "lead_time_s": 2.0
+        "f1": 0.654,
+        "precision": 0.53,
+        "recall": 0.854,
+        "lead_time_s": 3.0
       },
       {
         "record_id": "205",
@@ -254,43 +236,43 @@
         "n_abnormal": 85,
         "f1": 0.164,
         "precision": 0.089,
-        "recall": 1.0,
-        "lead_time_s": 243.0
+        "recall": 0.994,
+        "lead_time_s": 244.0
       },
       {
         "record_id": "207",
         "n_beats": 2385,
         "n_abnormal": 789,
-        "f1": 0.448,
-        "precision": 0.289,
-        "recall": 0.998,
+        "f1": 0.441,
+        "precision": 0.576,
+        "recall": 0.357,
         "lead_time_s": 0
       },
       {
         "record_id": "208",
         "n_beats": 3040,
         "n_abnormal": 1369,
-        "f1": 0.991,
-        "precision": 0.983,
-        "recall": 0.999,
+        "f1": 0.986,
+        "precision": 0.989,
+        "recall": 0.983,
         "lead_time_s": 0
       },
       {
         "record_id": "209",
         "n_beats": 3052,
         "n_abnormal": 384,
-        "f1": 0.491,
-        "precision": 0.326,
-        "recall": 1.0,
-        "lead_time_s": 49.0
+        "f1": 0.26,
+        "precision": 0.393,
+        "recall": 0.194,
+        "lead_time_s": 0
       },
       {
         "record_id": "210",
         "n_beats": 2685,
         "n_abnormal": 227,
-        "f1": 0.502,
+        "f1": 0.5,
         "precision": 0.335,
-        "recall": 0.998,
+        "recall": 0.992,
         "lead_time_s": 0
       },
       {
@@ -306,63 +288,63 @@
         "record_id": "213",
         "n_beats": 3294,
         "n_abnormal": 610,
-        "f1": 0.725,
+        "f1": 0.724,
         "precision": 0.568,
         "recall": 1.0,
-        "lead_time_s": 57.0
+        "lead_time_s": 58.0
       },
       {
         "record_id": "214",
         "n_beats": 2297,
         "n_abnormal": 259,
-        "f1": 0.663,
-        "precision": 0.496,
+        "f1": 0.662,
+        "precision": 0.495,
         "recall": 1.0,
-        "lead_time_s": 2.0
+        "lead_time_s": 3.0
       },
       {
         "record_id": "215",
         "n_beats": 3400,
         "n_abnormal": 168,
-        "f1": 0.464,
-        "precision": 0.302,
-        "recall": 1.0,
-        "lead_time_s": 14.0
+        "f1": 0.417,
+        "precision": 0.275,
+        "recall": 0.868,
+        "lead_time_s": 15.0
       },
       {
         "record_id": "217",
         "n_beats": 2280,
         "n_abnormal": 1964,
-        "f1": 0.992,
-        "precision": 0.984,
-        "recall": 0.999,
+        "f1": 0.231,
+        "precision": 0.918,
+        "recall": 0.132,
         "lead_time_s": 0
       },
       {
         "record_id": "219",
         "n_beats": 2312,
         "n_abnormal": 72,
-        "f1": 0.249,
-        "precision": 0.142,
-        "recall": 1.0,
-        "lead_time_s": 35.0
+        "f1": 0.078,
+        "precision": 0.089,
+        "recall": 0.07,
+        "lead_time_s": 0
       },
       {
         "record_id": "220",
         "n_beats": 2069,
         "n_abnormal": 94,
-        "f1": 0.239,
-        "precision": 0.135,
-        "recall": 1.0,
-        "lead_time_s": 46.0
+        "f1": 0.174,
+        "precision": 0.233,
+        "recall": 0.139,
+        "lead_time_s": 11.0
       },
       {
         "record_id": "221",
         "n_beats": 2462,
         "n_abnormal": 396,
-        "f1": 0.818,
-        "precision": 0.693,
-        "recall": 0.999,
+        "f1": 0.808,
+        "precision": 0.689,
+        "recall": 0.978,
         "lead_time_s": 0
       },
       {
@@ -370,36 +352,36 @@
         "n_beats": 2634,
         "n_abnormal": 209,
         "f1": 0.39,
-        "precision": 0.243,
-        "recall": 1.0,
-        "lead_time_s": 530.0
+        "precision": 0.242,
+        "recall": 0.995,
+        "lead_time_s": 531.0
       },
       {
         "record_id": "223",
         "n_beats": 2643,
         "n_abnormal": 560,
-        "f1": 0.634,
-        "precision": 0.464,
-        "recall": 1.0,
-        "lead_time_s": 20.0
+        "f1": 0.604,
+        "precision": 0.448,
+        "recall": 0.928,
+        "lead_time_s": 21.0
       },
       {
         "record_id": "228",
         "n_beats": 2141,
         "n_abnormal": 365,
-        "f1": 0.694,
-        "precision": 0.532,
-        "recall": 1.0,
-        "lead_time_s": 13.0
+        "f1": 0.465,
+        "precision": 0.415,
+        "recall": 0.528,
+        "lead_time_s": 14.0
       },
       {
         "record_id": "230",
         "n_beats": 2466,
         "n_abnormal": 1,
-        "f1": 0.004,
-        "precision": 0.002,
-        "recall": 1.0,
-        "lead_time_s": 1744.0
+        "f1": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "lead_time_s": 1651.0
       },
       {
         "record_id": "231",
@@ -408,15 +390,15 @@
         "f1": 0.007,
         "precision": 0.003,
         "recall": 1.0,
-        "lead_time_s": 142.0
+        "lead_time_s": 143.0
       },
       {
         "record_id": "232",
         "n_beats": 1816,
         "n_abnormal": 1382,
-        "f1": 0.953,
-        "precision": 0.911,
-        "recall": 0.999,
+        "f1": 0.956,
+        "precision": 0.915,
+        "recall": 1.0,
         "lead_time_s": 0
       },
       {
@@ -432,12 +414,12 @@
         "record_id": "234",
         "n_beats": 2764,
         "n_abnormal": 53,
-        "f1": 0.044,
-        "precision": 0.023,
-        "recall": 1.0,
-        "lead_time_s": 842.0
+        "f1": 0.25,
+        "precision": 0.29,
+        "recall": 0.22,
+        "lead_time_s": 510.0
       }
     ]
   },
-  "elapsed_s": 497.2
+  "elapsed_s": 568.1
 }

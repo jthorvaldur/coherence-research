@@ -82,7 +82,7 @@ def normalize(v):
 
 
 def analyze_record(record_id: str) -> dict | None:
-    """Analyze a single MIT-BIH record."""
+    """Analyze a single MIT-BIH record using inter-channel coherence."""
     try:
         record = wfdb.rdrecord(record_id, pn_dir="mitdb")
         ann = wfdb.rdann(record_id, "atr", pn_dir="mitdb")
@@ -90,15 +90,17 @@ def analyze_record(record_id: str) -> dict | None:
         print(f"    Skip {record_id}: {e}")
         return None
 
-    # Use first channel (MLII)
-    signal = record.p_signal[:, 0].astype(np.float64)
-    fs = record.fs
-    n = len(signal)
-    normed = normalize(signal)
+    if record.p_signal.shape[1] < 2:
+        print(f"    Skip {record_id}: single channel only")
+        return None
 
-    # Build baseline from first 30 seconds of normal beats
+    # Use both channels — inter-channel coherence is the signal
+    ch1 = normalize(record.p_signal[:, 0].astype(np.float64))
+    ch2 = normalize(record.p_signal[:, 1].astype(np.float64))
+    fs = record.fs
+    n = len(ch1)
+
     baseline_end = int(BASELINE_SECONDS * fs)
-    baseline = normed[:baseline_end]
 
     # Map annotations to per-sample labels
     beat_labels = np.zeros(n, dtype=int)  # 0 = normal, 1 = abnormal
@@ -118,13 +120,11 @@ def analyze_record(record_id: str) -> dict | None:
         if symbol in ABNORMAL_BEATS:
             arrhythmia_counts[symbol] = arrhythmia_counts.get(symbol, 0) + 1
 
-    # Rolling coherence
+    # Rolling inter-channel coherence
     deltas = []
     for start in range(0, n - WINDOW_SIZE + 1, STEP_SIZE):
         end = start + WINDOW_SIZE
-        sig_win = normed[start:end]
-        base_win = np.tile(baseline, (WINDOW_SIZE // len(baseline)) + 1)[:WINDOW_SIZE]
-        scores = coherence_score(sig_win, base_win)
+        scores = coherence_score(ch1[start:end], ch2[start:end])
         mid = start + WINDOW_SIZE // 2
 
         # Check if this window overlaps abnormal region
@@ -138,12 +138,11 @@ def analyze_record(record_id: str) -> dict | None:
             "time_s": mid / fs,
         })
 
-    # Normalize deltas
+    # Normalize against baseline period mean delta
     d_arr = np.array([d["delta"] for d in deltas])
-    if len(d_arr) > 3 and d_arr[:3].mean() > 0:
-        d_norm = d_arr / d_arr[:3].mean()
-    else:
-        d_norm = d_arr
+    baseline_windows = int(BASELINE_SECONDS / (STEP_SIZE / fs))
+    baseline_mean = d_arr[:baseline_windows].mean() if baseline_windows > 0 and d_arr[:baseline_windows].mean() > 0 else d_arr[d_arr > 0].mean() if (d_arr > 0).any() else 1.0
+    d_norm = d_arr / baseline_mean
     for i, dn in enumerate(d_norm):
         deltas[i]["delta_norm"] = float(np.clip(dn, 0, 2))
 
@@ -184,6 +183,7 @@ def analyze_record(record_id: str) -> dict | None:
         "lead_time_s": lead_time_s,
         "mean_delta_normal": float(np.mean([d["delta_norm"] for d in deltas if not d["is_abnormal"]])) if any(not d["is_abnormal"] for d in deltas) else 0,
         "mean_delta_abnormal": float(np.mean([d["delta_norm"] for d in deltas if d["is_abnormal"]])) if any(d["is_abnormal"] for d in deltas) else 0,
+        "deltas_all": deltas,  # full for plotting
         "deltas": deltas[:200],  # truncate for JSON size
     }
 
@@ -206,10 +206,16 @@ def main():
             continue
         all_results.append(result)
 
-        # Pick example: record with most arrhythmia and good detection
-        if result["n_abnormal_beats"] > 0:
-            if example_result is None or result["f1"] > example_result.get("f1", 0):
-                example_result = result
+        # Pick example: record with good mix of normal/abnormal and real discrimination
+        if result["n_abnormal_beats"] > 20:
+            frac = result["abnormal_frac"]
+            # Prefer records with 5-50% abnormal and decent F1 (real separation)
+            if 0.05 < frac < 0.50 and result["f1"] > 0.15:
+                score = result["f1"] * (1 - abs(frac - 0.25))  # favor ~25% abnormal
+                best_score = example_result.get("_sel_score", 0) if example_result else 0
+                if score > best_score:
+                    result["_sel_score"] = score
+                    example_result = result
 
         if (i + 1) % 10 == 0 or i == len(RECORDS) - 1:
             print(f"    [{i+1}/{len(RECORDS)}] Record {rec_id}: "
@@ -241,38 +247,75 @@ def main():
     # --- Plots ---
     print("\n  Generating plots...")
 
-    # Plot 1: Example record
+    # Plot 1: Example record — full recording with raw ECG + delta overlay
     if example_result:
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(16, 8), sharex=True)
-        deltas = example_result["deltas"]
-        times = [d["time_s"] for d in deltas]
-        d_norms = [d["delta_norm"] for d in deltas]
-        abnormal = [d["is_abnormal"] for d in deltas]
+        # Re-load raw ECG for the example record
+        try:
+            rec = wfdb.rdrecord(example_result["record_id"], pn_dir="mitdb")
+            raw_ch1 = rec.p_signal[:, 0]
+            raw_fs = rec.fs
+        except Exception:
+            raw_ch1 = None
+            raw_fs = example_result["fs"]
 
-        ax1.plot(times, d_norms, color="#00d4ff", linewidth=0.8)
-        ax1.axhline(DELTA_THRESHOLD, color="#ff6b6b", linestyle="--", alpha=0.6)
-        ax1.fill_between(times, 0, d_norms, where=[a for a in abnormal], alpha=0.2, color="#ff6b6b", label="Abnormal region")
-        ax1.set_ylabel("Delta (normalized)")
-        ax1.set_title(f"Record {example_result['record_id']} — {example_result['n_abnormal_beats']} abnormal beats, F1={example_result['f1']:.3f}")
-        ax1.legend(fontsize=8)
-        ax1.grid(True)
+        all_deltas = example_result.get("deltas_all", example_result["deltas"])
+        times = [d["time_s"] for d in all_deltas]
+        d_norms = [d["delta_norm"] for d in all_deltas]
+        abnormal = [d["is_abnormal"] for d in all_deltas]
 
-        # Delta in normal vs abnormal
-        normal_d = [d["delta_norm"] for d in deltas if not d["is_abnormal"]]
-        abnormal_d = [d["delta_norm"] for d in deltas if d["is_abnormal"]]
-        ax2.hist(normal_d, bins=30, alpha=0.6, color="#50fa7b", label=f"Normal (n={len(normal_d)})", density=True)
+        n_panels = 3 if raw_ch1 is not None else 2
+        fig, axes = plt.subplots(n_panels, 1, figsize=(16, 3.5 * n_panels))
+        ax_idx = 0
+
+        # Panel: raw ECG trace
+        if raw_ch1 is not None:
+            ax = axes[ax_idx]; ax_idx += 1
+            ecg_times = np.arange(len(raw_ch1)) / raw_fs
+            ax.plot(ecg_times, raw_ch1, color="#73daca", linewidth=0.3, alpha=0.8)
+            # Shade abnormal regions
+            beat_labels = np.zeros(len(raw_ch1), dtype=bool)
+            ann = wfdb.rdann(example_result["record_id"], "atr", pn_dir="mitdb")
+            for sample, symbol in zip(ann.sample, ann.symbol):
+                if sample < len(raw_ch1) and symbol in ABNORMAL_BEATS:
+                    s = max(0, sample - raw_fs // 2)
+                    e = min(len(raw_ch1), sample + raw_fs // 2)
+                    beat_labels[s:e] = True
+            ax.fill_between(ecg_times, raw_ch1.min(), raw_ch1.max(),
+                           where=beat_labels, alpha=0.15, color="#ff6b6b")
+            ax.set_ylabel("ECG (mV)")
+            ax.set_title(f"Record {example_result['record_id']} — Raw ECG (MLII) with annotated arrhythmia regions")
+            ax.grid(True)
+
+        # Panel: delta overlay
+        ax = axes[ax_idx]; ax_idx += 1
+        ax.plot(times, d_norms, color="#00d4ff", linewidth=0.8)
+        ax.axhline(DELTA_THRESHOLD, color="#ff6b6b", linestyle="--", alpha=0.6, label=f"Threshold ({DELTA_THRESHOLD})")
+        ax.fill_between(times, 0, max(d_norms) if d_norms else 1,
+                        where=abnormal, alpha=0.15, color="#ff6b6b", label="Abnormal region")
+        ax.set_ylabel("Delta (normalized)")
+        ax.set_xlabel("Time (s)")
+        ax.set_title(f"{example_result['n_abnormal_beats']} abnormal beats, F1={example_result['f1']:.3f}, P={example_result['precision']:.3f}, R={example_result['recall']:.3f}")
+        ax.legend(fontsize=8)
+        ax.grid(True)
+
+        # Panel: delta distribution
+        ax = axes[ax_idx]
+        normal_d = [d["delta_norm"] for d in all_deltas if not d["is_abnormal"]]
+        abnormal_d = [d["delta_norm"] for d in all_deltas if d["is_abnormal"]]
+        if normal_d:
+            ax.hist(normal_d, bins=30, alpha=0.6, color="#50fa7b", label=f"Normal (n={len(normal_d)})", density=True)
         if abnormal_d:
-            ax2.hist(abnormal_d, bins=30, alpha=0.6, color="#ff6b6b", label=f"Abnormal (n={len(abnormal_d)})", density=True)
-        ax2.set_xlabel("Time (s)")
-        ax2.set_ylabel("Density")
-        ax2.set_title("Delta Distribution: Normal vs Abnormal Windows")
-        ax2.legend()
-        ax2.grid(True)
+            ax.hist(abnormal_d, bins=30, alpha=0.6, color="#ff6b6b", label=f"Abnormal (n={len(abnormal_d)})", density=True)
+        ax.set_xlabel("Delta (normalized)")
+        ax.set_ylabel("Density")
+        ax.set_title("Delta Distribution: Normal vs Abnormal Windows")
+        ax.legend()
+        ax.grid(True)
 
         fig.tight_layout()
         fig.savefig(OUTPUT_DIR / "exp11_example_record.png", dpi=150, bbox_inches="tight")
         plt.close(fig)
-        print("  Saved: exp11_example_record.png")
+        print(f"  Saved: exp11_example_record.png (record {example_result['record_id']})")
 
     # Plot 2: Detection summary across records
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
