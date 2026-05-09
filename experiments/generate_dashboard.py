@@ -420,6 +420,7 @@ def generate_dashboard(results_dir: Path, output_path: Path):
     <li><a href="/r/research/uci-power/">UCI Power</a></li>
     <li><a href="/r/research/math/">Math</a></li>
     <li><a href="/r/research/ecg/">ECG</a></li>
+    <li><a href="/r/research/credit-card/">Fraud</a></li>
     <li style="opacity: 0.3;">|</li>
     <li><a href="#summary">Summary</a></li>
     <li><a href="#synthetic">Synthetic</a></li>

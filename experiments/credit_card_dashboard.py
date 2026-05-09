@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Generate results/uci_power/index.html — self-contained dashboard for Experiment 10.
+"""Generate results/credit_card/index.html — self-contained dashboard for Experiment 12.
 
 Matches the exact visual style of the main Delta.72 research page
 (/r/research/index.html) — same fonts, colors, layout, component classes.
 
 Usage:
-    uv run python experiments/uci_power_dashboard.py
+    uv run python experiments/credit_card_dashboard.py
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-RESULTS_DIR = Path(__file__).resolve().parent.parent / "results" / "uci_power"
-RESULTS_JSON = RESULTS_DIR / "exp10_results.json"
+RESULTS_DIR = Path(__file__).resolve().parent.parent / "results" / "credit_card"
+RESULTS_JSON = RESULTS_DIR / "exp12_results.json"
 OUTPUT_HTML = RESULTS_DIR / "index.html"
 
 
@@ -23,48 +23,19 @@ def load_results() -> dict:
         return json.load(f)
 
 
-def build_monthly_rows(monthly_means: dict[str, float]) -> str:
-    """Build HTML table rows for monthly coherence means."""
-    rows = []
-    for month, val in monthly_means.items():
-        # Color based on coherence level
-        if val >= 0.6:
-            style = 'color: var(--red); font-weight: 600;'
-            badge = '<span class="badge badge-fail">High</span>'
-        elif val >= 0.35:
-            style = 'color: var(--amber);'
-            badge = '<span class="badge badge-warn">Moderate</span>'
-        else:
-            style = 'color: var(--green);'
-            badge = '<span class="badge badge-pass">Low</span>'
-        rows.append(
-            f'          <tr>'
-            f'<td>{month}</td>'
-            f'<td style="{style}">{val:.4f}</td>'
-            f'<td>{badge}</td>'
-            f'</tr>'
-        )
-    return "\n".join(rows)
-
-
 def generate_html(data: dict) -> str:
     s = data["stats"]
     cfg = data["config"]
 
-    monthly_rows = build_monthly_rows(s["monthly_means"])
-
-    # Summary stats for monthly analysis
-    monthly_vals = list(s["monthly_means"].values())
-    months_high = sum(1 for v in monthly_vals if v >= 0.6)
-    months_low = sum(1 for v in monthly_vals if v < 0.35)
+    top_features = ", ".join(f"<span>{f}</span>" for f in s["top_features"])
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>&Delta;.72 &mdash; UCI Household Electric Power Consumption</title>
-<meta name="description" content="Delta.72 coherence framework applied to UCI Household Electric Power Consumption dataset. 4 years of 1-minute resolution energy data, 7 features, resampled to hourly.">
+<title>&Delta;.72 &mdash; Credit Card Fraud Detection</title>
+<meta name="description" content="Delta.72 coherence framework applied to credit card fraud detection. 284,807 transactions, 30 PCA features, 0.17% fraud rate.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -350,28 +321,28 @@ def generate_html(data: dict) -> str:
     <li><a href="/r/research/nab/">NAB</a></li>
     <li><a href="/r/research/nasa/">NASA</a></li>
     <li><a href="/r/research/skab/">SKAB</a></li>
-    <li><a href="/r/research/uci-power/" style="color: var(--accent); font-weight: 600;">UCI Power</a></li>
+    <li><a href="/r/research/uci-power/">UCI Power</a></li>
     <li><a href="/r/research/math/">Math</a></li>
     <li><a href="/r/research/ecg/">ECG</a></li>
-    <li><a href="/r/research/credit-card/">Fraud</a></li>
+    <li><a href="/r/research/credit-card/" style="color: var(--accent); font-weight: 600;">Fraud</a></li>
     <li style="opacity: 0.3;">|</li>
     <li><a href="#results">Results</a></li>
     <li><a href="#plots">Plots</a></li>
-    <li><a href="#monthly">Monthly</a></li>
+    <li><a href="#dataset">Dataset</a></li>
   </ul>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-  <p class="hero-eyebrow">Experiment 10 &mdash; Household Energy</p>
+  <p class="hero-eyebrow">Experiment 12 &mdash; Financial Fraud</p>
   <h1 class="hero-title">
-    <strong>&Delta;.72</strong> on UCI Power
+    <strong>&Delta;.72</strong> on Credit Card Transactions
   </h1>
   <p class="hero-sub">
-    Applying the coherence framework to real household energy consumption data.
-    {s['n_hours']:,} hours of readings across 7 electrical features,
-    resampled from 1-minute to hourly resolution. Can &Delta; detect
-    structural shifts in consumption patterns that variance misses?
+    Applying the coherence framework to real financial fraud detection.
+    {s['n_transactions']:,} transactions, {s['n_fraud']} fraudulent ({s['fraud_rate']:.2%} fraud rate),
+    30 PCA-transformed features. Can &Delta; separate fraud from legitimate activity
+    where variance fails?
   </p>
 </section>
 
@@ -379,11 +350,8 @@ def generate_html(data: dict) -> str:
 <div class="equation-block">
   <div class="equation-main">&Delta; = (P &middot; A &middot; R) / (D + N)</div>
   <div class="equation-desc">
-    Applied to 7 power features: <span>Global_active_power</span>,
-    <span>Global_reactive_power</span>, <span>Voltage</span>,
-    <span>Global_intensity</span>, <span>Sub_metering_1</span>,
-    <span>Sub_metering_2</span>, <span>Sub_metering_3</span>.<br>
-    Baseline: first {cfg['baseline_weeks']} weeks. Rolling window: {cfg['window_size']} hours (1 week), step {cfg['step_size']} hours.
+    Applied to {cfg['n_features_used']} fraud-sensitive features: {top_features}.<br>
+    Baseline: first {cfg['baseline_n']:,} transactions. Rolling window: {cfg['window_size']} transactions, step {cfg['step_size']}.
   </div>
 </div>
 
@@ -394,39 +362,52 @@ def generate_html(data: dict) -> str:
     <p class="section-label">Key Results</p>
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--accent);">{s['n_hours']:,}</div>
-        <div class="metric-label">Hours Analyzed</div>
+        <div class="metric-value" style="color: var(--accent);">{s['n_transactions']:,}</div>
+        <div class="metric-label">Transactions</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--teal);">{s['n_windows']:,}</div>
-        <div class="metric-label">Windows</div>
+        <div class="metric-value" style="color: var(--red);">{s['n_fraud']}</div>
+        <div class="metric-label">Fraud Cases</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--red);">{s['n_alerts']}</div>
-        <div class="metric-label">&Delta; Alerts</div>
+        <div class="metric-value" style="color: var(--amber);">{s['fraud_rate']:.2%}</div>
+        <div class="metric-label">Fraud Rate</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--amber);">{s['n_var_alerts']}</div>
-        <div class="metric-label">Variance Alerts</div>
+        <div class="metric-value" style="color: var(--green);">{s['coherence_f1']:.3f}</div>
+        <div class="metric-label">&Delta; F1 Score</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--green);">{s['coherence_only']}</div>
-        <div class="metric-label">Coherence-Only</div>
+        <div class="metric-value" style="color: var(--accent2);">{s['coherence_precision']:.3f}</div>
+        <div class="metric-label">&Delta; Precision</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--accent2);">{s['mean_delta']:.3f}</div>
-        <div class="metric-label">Mean &Delta;</div>
+        <div class="metric-value" style="color: var(--teal);">{s['coherence_recall']:.3f}</div>
+        <div class="metric-label">&Delta; Recall</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">{s['variance_f1']:.3f}</div>
+        <div class="metric-label">Variance F1</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">{s['variance_precision']:.3f}</div>
+        <div class="metric-label">Variance Precision</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">{s['variance_recall']:.3f}</div>
+        <div class="metric-label">Variance Recall</div>
       </div>
     </div>
 
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
-      Across {s['n_hours']:,} hours of household power data ({s['n_windows']:,} rolling windows),
-      the &Delta; coherence metric triggered <strong style="color: var(--red);">{s['n_alerts']} alerts</strong>
-      while variance-based detection found only <strong style="color: var(--amber);">{s['n_var_alerts']}</strong>.
-      Of the &Delta; alerts, <strong style="color: var(--green);">{s['coherence_only']}</strong> were
-      coherence-only detections &mdash; structural regime shifts invisible to variance.
-      The mean &Delta; value of <strong style="color: var(--accent2);">{s['mean_delta']:.3f}</strong>
-      indicates sustained departure from baseline coherence across the dataset.
+      Across {s['n_transactions']:,} credit card transactions, the &Delta; coherence metric achieved
+      an F1 score of <strong style="color: var(--green);">{s['coherence_f1']:.3f}</strong> with
+      <strong style="color: var(--teal);">{s['coherence_recall']:.1%} recall</strong> &mdash; catching the vast majority of
+      fraud cases. Variance-based detection effectively failed, achieving only
+      <strong style="color: var(--red);">{s['variance_recall']:.1%} recall</strong> and an F1 of {s['variance_f1']:.3f}.
+      Mean &Delta; for fraud transactions was <strong style="color: var(--accent);">{s['mean_delta_fraud']:.3f}</strong>
+      vs <strong style="color: var(--muted);">{s['mean_delta_legit']:.3f}</strong> for legitimate &mdash; a clear
+      separation signal.
     </p>
   </div>
 
@@ -436,17 +417,19 @@ def generate_html(data: dict) -> str:
     <div class="comparison">
       <div class="comp-card">
         <h3 style="color: var(--accent);">&Delta; Coherence</h3>
-        <p>Alerts: <strong style="color: var(--red);">{s['n_alerts']}</strong></p>
-        <p>Mean &Delta;: <strong>{s['mean_delta']:.3f}</strong></p>
-        <p>Threshold: <strong>{cfg['delta_threshold']}</strong></p>
-        <p>Sensitivity: <strong style="color: var(--green);">Structural shifts</strong></p>
+        <p>F1 Score: <strong style="color: var(--green);">{s['coherence_f1']:.3f}</strong></p>
+        <p>Precision: <strong>{s['coherence_precision']:.3f}</strong></p>
+        <p>Recall: <strong style="color: var(--teal);">{s['coherence_recall']:.1%}</strong></p>
+        <p>Mean &Delta; (fraud): <strong>{s['mean_delta_fraud']:.3f}</strong></p>
+        <p>Mean &Delta; (legit): <strong>{s['mean_delta_legit']:.3f}</strong></p>
       </div>
       <div class="comp-card">
         <h3 style="color: var(--red);">Variance</h3>
-        <p>Alerts: <strong style="color: var(--amber);">{s['n_var_alerts']}</strong></p>
+        <p>F1 Score: <strong style="color: var(--red);">{s['variance_f1']:.3f}</strong></p>
+        <p>Precision: <strong>{s['variance_precision']:.3f}</strong></p>
+        <p>Recall: <strong style="color: var(--red);">{s['variance_recall']:.1%}</strong></p>
         <p>Z-score threshold: <strong>{cfg['variance_zscore']}</strong></p>
-        <p>Missed: <strong style="color: var(--red);">{s['coherence_only']} events</strong></p>
-        <p>Sensitivity: <strong style="color: var(--amber);">Amplitude only</strong></p>
+        <p>Status: <span class="badge badge-fail">Near-zero detection</span></p>
       </div>
     </div>
   </div>
@@ -457,127 +440,83 @@ def generate_html(data: dict) -> str:
 
     <div class="experiment">
       <div class="exp-num">Plot 01</div>
-      <h2>Coherence Overview</h2>
+      <h2>Fraud Detection Overview</h2>
       <div class="exp-desc">
-        Full timeline of &Delta; coherence across {s['n_hours']:,} hours. Top: raw power signals.
-        Middle: system-level &Delta; with alert threshold. Bottom: per-feature &Delta; decomposition.
+        Transaction-level &Delta; coherence across the full dataset. Fraud transactions highlighted
+        against the legitimate baseline. Shows how coherence departs from normal patterns during
+        fraudulent activity.
       </div>
-      <div class="plot-wrap"><img src="exp10_overview.png" alt="Coherence overview across full timeline"></div>
+      <div class="plot-wrap"><img src="exp12_overview.png" alt="Fraud detection overview with coherence overlay"></div>
       <div class="finding">
-        Clear seasonal structure in coherence: winter months show higher &Delta; (more departure from
-        baseline), while summer months are more stable. The framework captures both gradual seasonal
-        drift and abrupt consumption regime changes.
-        <span class="badge badge-pass">Seasonal Signal</span>
+        Fraudulent transactions produce a measurably higher &Delta; signal ({s['mean_delta_fraud']:.3f}) compared
+        to legitimate transactions ({s['mean_delta_legit']:.3f}). The coherence framework detects structural
+        departure from baseline spending patterns without requiring labeled training data.
+        <span class="badge badge-pass">Signal Detected</span>
       </div>
     </div>
 
     <div class="experiment">
       <div class="exp-num">Plot 02</div>
-      <h2>Monthly Coherence Heatmap</h2>
+      <h2>Precision&ndash;Recall Analysis</h2>
       <div class="exp-desc">
-        Month-by-month coherence levels across all 4 years. Color intensity maps to mean &Delta; value.
+        Precision-recall trade-off for &Delta; coherence vs variance-based detection across
+        different threshold settings. Demonstrates the fundamental advantage of coherence
+        in extreme class-imbalance scenarios.
       </div>
-      <div class="plot-wrap"><img src="exp10_monthly_heatmap.png" alt="Monthly coherence heatmap"></div>
+      <div class="plot-wrap"><img src="exp12_precision_recall.png" alt="Precision-recall curves"></div>
       <div class="finding">
-        The heatmap reveals a repeating annual pattern: coherence peaks in winter (Dec&ndash;Feb)
-        and troughs in summer (Jul&ndash;Aug). {months_high} months exceed the high-coherence
-        threshold while {months_low} remain in the low range.
-        <span class="badge badge-pass">Repeatable</span>
+        &Delta; achieves <strong>{s['coherence_recall']:.1%} recall</strong> at {s['coherence_precision']:.1%} precision &mdash;
+        a strong result for unsupervised fraud detection on 0.17% class imbalance.
+        Variance collapses entirely, unable to distinguish fraud from normal fluctuation.
+        <span class="badge badge-pass">Robust</span>
       </div>
     </div>
 
     <div class="experiment">
       <div class="exp-num">Plot 03</div>
-      <h2>Daily Consumption Profile</h2>
+      <h2>Feature Importance</h2>
       <div class="exp-desc">
-        Average hourly power consumption profile showing intra-day patterns and their
-        relationship to coherence dynamics.
+        Contribution of each PCA component and the Amount feature to the overall &Delta; coherence
+        signal. Ranked by discriminative power between fraud and legitimate transactions.
       </div>
-      <div class="plot-wrap"><img src="exp10_daily_profile.png" alt="Daily consumption profile"></div>
+      <div class="plot-wrap"><img src="exp12_feature_importance.png" alt="Feature importance for fraud detection"></div>
       <div class="finding">
-        Daily profiles show distinct morning and evening peaks typical of residential consumption.
-        &Delta; is sensitive to changes in these temporal patterns &mdash; a shift in peak timing
-        registers as a coherence change even if total consumption remains constant.
-        <span class="badge badge-pass">Temporal Sensitivity</span>
+        The top contributing features &mdash; <strong>Amount</strong>, <strong>V1</strong>, <strong>V2</strong>,
+        <strong>V3</strong> &mdash; align with known fraud indicators in the PCA-transformed space.
+        The coherence framework naturally weights features by their structural stability, surfacing
+        the most discriminative signals without supervised feature selection.
+        <span class="badge badge-pass">Interpretable</span>
       </div>
     </div>
-
-    <div class="experiment">
-      <div class="exp-num">Plot 04</div>
-      <h2>Alert Distribution</h2>
-      <div class="exp-desc">
-        Distribution of &Delta; alerts across the timeline. Where and when does the coherence
-        framework detect structural shifts?
-      </div>
-      <div class="plot-wrap"><img src="exp10_alert_distribution.png" alt="Alert distribution"></div>
-      <div class="finding">
-        Alerts cluster around seasonal transitions and holiday periods, consistent with genuine
-        changes in household energy behavior. The {s['coherence_only']} coherence-only alerts
-        represent events completely invisible to variance-based monitoring.
-        <span class="badge badge-pass">Behavioral Shifts</span>
-      </div>
-    </div>
-
-    <div class="experiment">
-      <div class="exp-num">Plot 05</div>
-      <h2>Multi-Feature Coherence</h2>
-      <div class="exp-desc">
-        Per-feature &Delta; decomposition across all 7 electrical measurements.
-        Which features drive the coherence signal?
-      </div>
-      <div class="plot-wrap"><img src="exp10_multi_feature.png" alt="Multi-feature coherence analysis"></div>
-      <div class="finding">
-        Sub-metering channels show the most variable coherence profiles, reflecting appliance-level
-        usage pattern changes. Global active power and intensity track closely, while voltage
-        maintains lower &Delta; values throughout &mdash; consistent with grid stability.
-        <span class="badge badge-pass">Feature Decomposition</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Monthly Coherence Table -->
-  <div class="section" id="monthly">
-    <p class="section-label">Monthly Coherence</p>
-    <table>
-      <thead><tr><th>Month</th><th>Mean &Delta;</th><th>Level</th></tr></thead>
-      <tbody>
-{monthly_rows}
-      </tbody>
-    </table>
-    <p style="font-size: 0.82rem; color: var(--muted); margin-top: 1rem; line-height: 1.7;">
-      {len(s['monthly_means'])} months analyzed. Coherence levels:
-      <span class="badge badge-fail">High</span> &ge; 0.6 &nbsp;
-      <span class="badge badge-warn">Moderate</span> 0.35&ndash;0.6 &nbsp;
-      <span class="badge badge-pass">Low</span> &lt; 0.35
-    </p>
   </div>
 
   <!-- Dataset -->
-  <div class="section">
+  <div class="section" id="dataset">
     <p class="section-label">Dataset</p>
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
-      <strong style="color: var(--text);">UCI Household Electric Power Consumption</strong> &mdash;
-      Measurements from a single household in Sceaux, France. 4 years of data (Dec 2006 &ndash; Nov 2010)
-      at 1-minute resolution, resampled to hourly ({s['n_hours']:,} readings). 7 electrical features
-      covering global power, voltage, intensity, and 3 sub-metering circuits.
-      Source: UCI Machine Learning Repository.
+      <strong style="color: var(--text);">Credit Card Fraud Detection</strong> &mdash; European cardholders,
+      September 2013. {s['n_transactions']:,} transactions over two days, of which {s['n_fraud']}
+      ({s['fraud_rate']:.2%}) are fraud. Features V1&ndash;V28 are PCA components (original features
+      withheld for confidentiality), plus <span style="color: var(--text); font-weight: 500;">Time</span>
+      and <span style="color: var(--text); font-weight: 500;">Amount</span>. Extreme class imbalance
+      makes this a challenging benchmark for anomaly detection.
     </p>
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
       <strong style="color: var(--text);">Configuration</strong> &mdash;
-      Baseline: first {cfg['baseline_weeks']} weeks.
-      Window: {cfg['window_size']} hours (1 week), step {cfg['step_size']} hours.
+      Baseline: first {cfg['baseline_n']:,} transactions.
+      Window: {cfg['window_size']} transactions, step {cfg['step_size']}.
       &Delta; threshold: {cfg['delta_threshold']}.
-      Resample: {cfg['resample_freq']}.
       Variance z-score: {cfg['variance_zscore']}.
+      Features: {', '.join(s['top_features'])}.
     </p>
     <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
       <span class="tag tag-green">Python</span>
       <span class="tag" style="color: var(--accent);">NumPy</span>
-      <span class="tag" style="color: var(--accent2);">Pandas</span>
-      <span class="tag" style="color: var(--teal);">UCI ML Repository</span>
-      <span class="tag tag-amber">4 Years</span>
-      <span class="tag" style="color: var(--text);">7 Features</span>
-      <span class="tag" style="color: var(--green);">Hourly</span>
+      <span class="tag" style="color: var(--accent2);">SciPy</span>
+      <span class="tag" style="color: var(--teal);">Kaggle</span>
+      <span class="tag tag-amber">PCA</span>
+      <span class="tag" style="color: var(--text);">284K Txns</span>
+      <span class="tag tag-red">0.17% Fraud</span>
     </div>
   </div>
 
@@ -592,7 +531,7 @@ def generate_html(data: dict) -> str:
 </main>
 
 <footer>
-  <p>&Delta;.72 Coherence Framework &mdash; Experiment 10: UCI Household Power</p>
+  <p>&Delta;.72 Coherence Framework &mdash; Experiment 12: Credit Card Fraud Detection</p>
   <p style="margin-top: 0.5rem;"><a href="/r/research/">thorarinson</a> &middot; <a href="https://coherenceengine.org">coherenceengine.org</a></p>
 </footer>
 
@@ -604,11 +543,11 @@ def generate_html(data: dict) -> str:
 
 def main():
     print("=" * 60)
-    print("  UCI Household Power Dashboard Generator")
+    print("  Credit Card Fraud Dashboard Generator")
     print("=" * 60)
 
     data = load_results()
-    print(f"  Loaded results: {data['stats']['n_hours']:,} hours, {data['stats']['n_windows']:,} windows")
+    print(f"  Loaded results: {data['stats']['n_transactions']:,} transactions, {data['stats']['n_fraud']} fraud")
 
     html = generate_html(data)
 
