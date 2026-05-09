@@ -1,0 +1,36 @@
+{
+  "experiment": 12,
+  "name": "Credit Card Fraud Detection",
+  "dataset": "Credit Card Fraud \u2014 284,807 transactions, 30 features, 492 fraud",
+  "config": {
+    "window_size": 500,
+    "step_size": 100,
+    "baseline_n": 5000,
+    "delta_threshold": 0.3,
+    "variance_zscore": 2.5,
+    "n_features_used": 6
+  },
+  "stats": {
+    "n_transactions": 284807,
+    "n_fraud": 492,
+    "fraud_rate": 0.00173,
+    "n_windows": 2844,
+    "coherence_precision": 0.406,
+    "coherence_recall": 0.887,
+    "coherence_f1": 0.557,
+    "variance_precision": 0.4,
+    "variance_recall": 0.002,
+    "variance_f1": 0.003,
+    "mean_delta_fraud": 0.139,
+    "mean_delta_legit": 0.12,
+    "top_features": [
+      "Amount",
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5"
+    ]
+  },
+  "elapsed_s": 2.8
+}
