@@ -1,5 +1,5 @@
 [project]
-name = "allison-research"
+name = "coherence-research"
 version = "0.1.0"
 description = "Delta.72 coherence framework — GPU experiment suite"
 requires-python = ">=3.11"

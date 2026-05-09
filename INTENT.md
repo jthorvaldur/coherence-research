@@ -1,14 +1,14 @@
 # INTENT.md
 
 > **Version:** 0.1.0
-> **Scope:** allison-research repo. Inherits from policy-orchestrator global INTENT.md.
+> **Scope:** coherence-research repo. Inherits from policy-orchestrator global INTENT.md.
 > **Audience:** Every agent — human, AI, or automated — that reads or writes in this repo.
 
 ---
 
 ## Prime Directive
 
-Research collaboration with Allison Louise Hensgen. Delta.72 coherence framework, energy systems, open data.
+Delta.72 coherence framework research. Instability detection via coherence metrics across energy, aerospace, industrial, biomedical, and financial domains.
 
 ---
 

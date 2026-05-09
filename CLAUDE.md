@@ -1,10 +1,10 @@
-# allison-research
+# coherence-research
 
 > Read `INTENT.md` before acting. It governs all work in this repo.
 
 ## Project Overview
 
-Research collaboration: Delta.72 coherence framework, energy open data, applied mathematics.
+Delta.72 coherence framework: instability detection via coherence metrics. Applied mathematics, cross-domain validation, GPU experiments.
 
 ## Language & Stack
 
