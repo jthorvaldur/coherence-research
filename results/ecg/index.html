@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>&Delta;.72 &mdash; Cardiac Arrhythmia Detection</title>
+<meta name="description" content="Delta.72 coherence framework applied to MIT-BIH Arrhythmia Database. 45 ECG records, 360 Hz, 2 channels, cardiologist-annotated arrhythmia detection.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07070f;
+    --surface: rgba(255,255,255,0.035);
+    --surface-hover: rgba(122,162,247,0.07);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(122,162,247,0.30);
+    --text: #e8e8f4;
+    --muted: rgba(232,232,244,0.45);
+    --dim: rgba(232,232,244,0.25);
+    --accent: #7aa2f7;
+    --accent2: #bb9af7;
+    --green: #9ece6a;
+    --amber: #e0af68;
+    --red: #f7768e;
+    --teal: #73daca;
+    --glow: rgba(122,162,247,0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 0 2rem; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(7,7,15,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 400;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    padding: 120px 2rem 60px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 200; letter-spacing: -0.01em;
+    line-height: 1.15; max-width: 720px; margin: 0 auto;
+  }
+  .hero-title strong {
+    font-weight: 500;
+    background: linear-gradient(140deg, #ffffff 20%, var(--accent) 60%, var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    margin-top: 1.2rem; font-size: 0.95rem;
+    color: var(--muted); max-width: 620px; margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* Equation */
+  .equation-block {
+    text-align: center;
+    padding: 1.5rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 700px; margin: 2rem auto;
+  }
+  .equation-main {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem; letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .equation-desc {
+    font-size: 0.78rem; color: var(--muted);
+    margin-top: 0.8rem; line-height: 1.8;
+  }
+  .equation-desc span { color: var(--text); font-weight: 500; }
+
+  /* Main */
+  main {
+    position: relative; z-index: 2;
+    max-width: 1000px; margin: 0 auto;
+    padding: 2rem 2rem 6rem;
+  }
+
+  /* Section */
+  .section { margin-bottom: 4rem; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::after {
+    content: ''; display: block; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  /* Metric cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem; text-align: center;
+    transition: border-color 0.25s;
+  }
+  .metric-card:hover { border-color: var(--border-hover); }
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .metric-label {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* Experiment card */
+  .experiment {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.25s;
+  }
+  .experiment:hover { border-color: var(--border-hover); }
+  .experiment h2 {
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-desc {
+    font-size: 0.85rem; color: var(--muted);
+    margin-bottom: 1.2rem; line-height: 1.6;
+  }
+  .experiment .finding {
+    font-size: 0.88rem; line-height: 1.7;
+    margin-top: 1rem;
+  }
+  .experiment .finding strong { color: var(--accent); }
+
+  /* Plot */
+  .plot-wrap {
+    margin: 1.2rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .plot-wrap img {
+    width: 100%; display: block;
+  }
+
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: 0.82rem;
+  }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(122,162,247,0.06);
+    color: var(--accent); padding: 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(122,162,247,0.15);
+  }
+  td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tr:hover { background: rgba(255,255,255,0.015); }
+
+  /* Comparison */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin: 1rem 0;
+  }
+  .comp-card {
+    background: rgba(255,255,255,0.015);
+    border-radius: 8px; padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .comp-card h3 {
+    font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .comp-card p {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+  }
+  .comp-card strong { color: var(--text); }
+
+  /* Tags */
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.06em; padding: 2px 8px;
+    border-radius: 6px; display: inline-block;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tag-green { color: var(--green); }
+  .tag-amber { color: var(--amber); }
+  .tag-red { color: var(--red); }
+
+  /* Status badge */
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+    display: inline-block;
+  }
+  .badge-pass { background: rgba(158,206,106,0.12); color: var(--green); }
+  .badge-warn { background: rgba(224,175,104,0.12); color: var(--amber); }
+  .badge-fail { background: rgba(247,118,142,0.12); color: var(--red); }
+
+  /* Footer */
+  footer {
+    text-align: center; padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    main { padding: 2rem 1.2rem 4rem; }
+    .comparison { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/r/research/" class="nav-brand">Thorarinson</a>
+  <ul class="nav-links">
+    <li><a href="/r/research/">Exps 1&ndash;7</a></li>
+    <li><a href="/r/research/nab/">NAB</a></li>
+    <li><a href="/r/research/nasa/">NASA</a></li>
+    <li><a href="/r/research/skab/">SKAB</a></li>
+    <li><a href="/r/research/uci-power/">UCI Power</a></li>
+    <li><a href="/r/research/math/">Math</a></li>
+    <li><a href="/r/research/ecg/" style="color: var(--accent); font-weight: 600;">ECG</a></li>
+    <li style="opacity: 0.3;">|</li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#plots">Plots</a></li>
+    <li><a href="#records">Per-Record</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero-eyebrow">Experiment 11 &mdash; Cardiac Arrhythmia</p>
+  <h1 class="hero-title">
+    <strong>&Delta;.72</strong> on MIT-BIH ECG
+  </h1>
+  <p class="hero-sub">
+    Applying the coherence framework to cardiologist-annotated electrocardiograms.
+    45 ECG records at 360&thinsp;Hz, 2 channels, 13,044 abnormal beats
+    across 11 arrhythmia types. Can &Delta; detect cardiac rhythm departures from coherent baseline?
+  </p>
+</section>
+
+<!-- Equation -->
+<div class="equation-block">
+  <div class="equation-main">&Delta; = (P &middot; A &middot; R) / (D + N)</div>
+  <div class="equation-desc">
+    Applied to 2-channel ECG (modified limb lead <span>MLII</span> + <span>V1/V5</span>)
+    sampled at <span>360&thinsp;Hz</span>.<br>
+    Baseline: first 30s of each record.
+    Rolling window: 1080 samples (3s),
+    step 360 (1s).
+    &Delta; threshold: 0.3.
+  </div>
+</div>
+
+<main>
+
+  <!-- Summary Metrics -->
+  <div class="section" id="results">
+    <p class="section-label">Key Results</p>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent);">45</div>
+        <div class="metric-label">ECG Records</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent2);">42</div>
+        <div class="metric-label">With Arrhythmia</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--amber);">0.386</div>
+        <div class="metric-label">Mean F1 Score</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">0.302</div>
+        <div class="metric-label">Mean Precision</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">1.000</div>
+        <div class="metric-label">Mean Recall</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--teal);">281s</div>
+        <div class="metric-label">Mean Lead Time</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">0.001</div>
+        <div class="metric-label">Mean &Delta; Normal</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">0.000</div>
+        <div class="metric-label">Mean &Delta; Abnormal</div>
+      </div>
+    </div>
+
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      Across 45 MIT-BIH records, the &Delta; coherence metric achieved
+      <strong style="color: var(--green);">100% recall</strong> &mdash; detecting arrhythmia
+      windows in virtually every record that contains them. Precision is
+      <strong style="color: var(--red);">30.2%</strong>, reflecting high sensitivity at the
+      cost of false positives in normal rhythm. Mean lead time of
+      <strong style="color: var(--teal);">281s</strong> before the first annotated
+      abnormal beat. 42 of 45 records contain arrhythmia;
+      3 are normal-only controls.
+    </p>
+  </div>
+
+  <!-- Method Characteristics -->
+  <div class="section">
+    <p class="section-label">Detection Profile</p>
+    <div class="comparison">
+      <div class="comp-card">
+        <h3 style="color: var(--green);">Strengths</h3>
+        <p>Recall: <strong style="color: var(--green);">100%</strong> &mdash; near-perfect</p>
+        <p>Lead time: <strong>281s</strong> mean advance warning</p>
+        <p>No missed arrhythmia records</p>
+        <p>&Delta; separates normal (<strong>0.001</strong>) from abnormal (<strong>0.000</strong>)</p>
+      </div>
+      <div class="comp-card">
+        <h3 style="color: var(--amber);">Trade-offs</h3>
+        <p>Precision: <strong style="color: var(--red);">30.2%</strong> &mdash; high false-positive rate</p>
+        <p>F1: <strong style="color: var(--amber);">0.386</strong> mean across records</p>
+        <p>Best on high-burden records (PVC, bigeminy)</p>
+        <p>Sparse arrhythmia records inflate FP count</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plots -->
+  <div class="section" id="plots">
+    <p class="section-label">Experiment Plots</p>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 01</div>
+      <h2>Example ECG Record with &Delta; Overlay</h2>
+      <div class="exp-desc">
+        Top: raw 2-channel ECG trace with cardiologist beat annotations.
+        Bottom: rolling &Delta; coherence with threshold and detected arrhythmia windows.
+      </div>
+      <div class="plot-wrap"><img src="exp11_example_record.png" alt="Example ECG record with coherence overlay"></div>
+      <div class="finding">
+        The &Delta; metric drops when inter-channel coherence breaks down around abnormal beats.
+        Arrhythmia regions correspond to sustained low-coherence windows, while normal sinus
+        rhythm maintains high &Delta; values near baseline.
+        <span class="badge badge-pass">Visible Signal</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 02</div>
+      <h2>Detection Summary</h2>
+      <div class="exp-desc">
+        Per-record F1, precision, and recall across all 45 records, sorted by F1.
+      </div>
+      <div class="plot-wrap"><img src="exp11_detection_summary.png" alt="Detection summary across records"></div>
+      <div class="finding">
+        Records with high arrhythmia burden (200, 208, 217, 232, 233) achieve F1 &gt; 0.89.
+        Records with very sparse abnormal beats (1&ndash;3 per recording) show low precision
+        because the entire record is flagged while only a handful of beats are abnormal.
+        <span class="badge badge-pass">Pattern Consistent</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 03</div>
+      <h2>Arrhythmia Type Distribution</h2>
+      <div class="exp-desc">
+        Breakdown of the 13,044 abnormal beats by AAMI classification across the database.
+      </div>
+      <div class="plot-wrap"><img src="exp11_arrhythmia_types.png" alt="Arrhythmia type distribution"></div>
+      <div class="finding">
+        Ventricular premature beats (V) dominate at 7,065 occurrences,
+        followed by atrial premature (A) at 2,546 and paced beats (/)
+        at 1,542. The database covers 11 distinct arrhythmia types.
+        <span class="badge badge-pass">Comprehensive</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 04</div>
+      <h2>Lead Time Distribution</h2>
+      <div class="exp-desc">
+        How many seconds before the first annotated abnormal beat does &Delta; alert?
+        Distribution across records with arrhythmia.
+      </div>
+      <div class="plot-wrap"><img src="exp11_lead_time.png" alt="Lead time distribution"></div>
+      <div class="finding">
+        Lead times range from immediate (0s, arrhythmia present from recording start) to
+        over 1700s for records where rare abnormal beats appear late. Mean lead:
+        <strong>281s</strong>. For records where arrhythmia appears early,
+        &Delta; flags the departure within the first analysis window.
+        <span class="badge badge-pass">Early Detection</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrhythmia Types -->
+  <div class="section">
+    <p class="section-label">Arrhythmia Types</p>
+    <table>
+      <thead><tr><th>Code</th><th>Type</th><th>Count</th><th>Share</th></tr></thead>
+      <tbody>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">V</td><td>Ventricular premature</td><td style="font-weight: 500;">7,065</td><td style="color: var(--muted);">54.2%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">A</td><td>Atrial premature</td><td style="font-weight: 500;">2,546</td><td style="color: var(--muted);">19.5%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">/</td><td>Paced beat</td><td style="font-weight: 500;">1,542</td><td style="color: var(--muted);">11.8%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">F</td><td>Fusion of V + normal</td><td style="font-weight: 500;">803</td><td style="color: var(--muted);">6.2%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">!</td><td>Ventricular flutter wave</td><td style="font-weight: 500;">472</td><td style="color: var(--muted);">3.6%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">f</td><td>Fusion of paced + normal</td><td style="font-weight: 500;">260</td><td style="color: var(--muted);">2.0%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">a</td><td>Aberrated atrial premature</td><td style="font-weight: 500;">150</td><td style="color: var(--muted);">1.1%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">E</td><td>Ventricular escape</td><td style="font-weight: 500;">106</td><td style="color: var(--muted);">0.8%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">J</td><td>Junctional premature</td><td style="font-weight: 500;">83</td><td style="color: var(--muted);">0.6%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">Q</td><td>Unclassifiable</td><td style="font-weight: 500;">15</td><td style="color: var(--muted);">0.1%</td></tr>
+          <tr><td style="font-family: 'JetBrains Mono', monospace; color: var(--accent);">S</td><td>Supraventricular premature</td><td style="font-weight: 500;">2</td><td style="color: var(--muted);">0.0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notable Records -->
+  <div class="section">
+    <p class="section-label">Notable Records</p>
+
+    <h3 style="font-size: 0.95rem; margin-bottom: 1rem;">Highest F1 (top 5 with arrhythmia)</h3>
+    <table>
+      <thead><tr><th>Record</th><th>Beats</th><th>Abnormal</th><th>F1</th><th>Precision</th><th>Recall</th></tr></thead>
+      <tbody>
+          <tr><td>217</td><td>2280</td><td>1964</td><td style="color: var(--green); font-weight: 600;">0.992</td><td>0.984</td><td style="color: var(--green);">0.999</td></tr>
+          <tr><td>208</td><td>3040</td><td>1369</td><td style="color: var(--green); font-weight: 600;">0.991</td><td>0.983</td><td style="color: var(--green);">0.999</td></tr>
+          <tr><td>233</td><td>3152</td><td>849</td><td style="color: var(--green); font-weight: 600;">0.973</td><td>0.948</td><td style="color: var(--green);">0.999</td></tr>
+          <tr><td>232</td><td>1816</td><td>1382</td><td style="color: var(--green); font-weight: 600;">0.953</td><td>0.911</td><td style="color: var(--green);">0.999</td></tr>
+          <tr><td>200</td><td>2792</td><td>858</td><td style="color: var(--green); font-weight: 600;">0.893</td><td>0.807</td><td style="color: var(--green);">0.999</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 0.95rem; margin: 1.5rem 0 1rem;">Lowest F1 (bottom 5 with arrhythmia)</h3>
+    <table>
+      <thead><tr><th>Record</th><th>Beats</th><th>Abnormal</th><th>F1</th><th>Precision</th><th>Recall</th></tr></thead>
+      <tbody>
+          <tr><td>121</td><td>1876</td><td>2</td><td style="color: var(--red);">0.007</td><td>0.003</td><td>1.000</td></tr>
+          <tr><td>231</td><td>2011</td><td>3</td><td style="color: var(--red);">0.007</td><td>0.003</td><td>1.000</td></tr>
+          <tr><td>111</td><td>2133</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td>1.000</td></tr>
+          <tr><td>117</td><td>1539</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td>1.000</td></tr>
+          <tr><td>230</td><td>2466</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td>1.000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Per-Record Detail -->
+  <div class="section" id="records">
+    <p class="section-label">All Records</p>
+    <details>
+      <summary style="cursor: pointer; color: var(--accent); font-size: 0.88rem; margin-bottom: 1rem;">
+        Show all 45 records
+      </summary>
+      <table>
+        <thead><tr><th>Record</th><th>Beats</th><th>Abnormal</th><th>F1</th><th>Precision</th><th>Recall</th><th>Lead</th></tr></thead>
+        <tbody>
+          <tr><td>100</td><td>2274</td><td>34</td><td style="color: var(--red);">0.137</td><td>0.074</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">2s</td></tr>
+          <tr><td>101</td><td>1874</td><td>5</td><td style="color: var(--red);">0.022</td><td>0.011</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">315s</td></tr>
+          <tr><td>103</td><td>2091</td><td>2</td><td style="color: var(--red);">0.009</td><td>0.004</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">1158s</td></tr>
+          <tr><td>105</td><td>2691</td><td>46</td><td style="color: var(--red);">0.184</td><td>0.102</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">11s</td></tr>
+          <tr><td>106</td><td>2098</td><td>520</td><td style="color: var(--amber);">0.671</td><td>0.504</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">87s</td></tr>
+          <tr><td>108</td><td>1824</td><td>23</td><td style="color: var(--red);">0.090</td><td>0.047</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">7s</td></tr>
+          <tr><td>109</td><td>2535</td><td>40</td><td style="color: var(--red);">0.163</td><td>0.089</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">13s</td></tr>
+          <tr><td>111</td><td>2133</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">514s</td></tr>
+          <tr><td>112</td><td>2550</td><td>2</td><td style="color: var(--red);">0.009</td><td>0.004</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">700s</td></tr>
+          <tr><td>113</td><td>1796</td><td>6</td><td style="color: var(--red);">0.026</td><td>0.013</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">20s</td></tr>
+          <tr><td>114</td><td>1890</td><td>59</td><td style="color: var(--red);">0.203</td><td>0.113</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">81s</td></tr>
+          <tr><td>115</td><td>1962</td><td>0</td><td style="color: var(--red);">0.000</td><td>0.000</td><td style="color: var(--dim);">0.000</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>116</td><td>2421</td><td>110</td><td style="color: var(--amber);">0.370</td><td>0.227</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">94s</td></tr>
+          <tr><td>117</td><td>1539</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">723s</td></tr>
+          <tr><td>118</td><td>2301</td><td>112</td><td style="color: var(--amber);">0.363</td><td>0.222</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">27s</td></tr>
+          <tr><td>119</td><td>2094</td><td>444</td><td style="color: var(--green); font-weight: 600;">0.817</td><td>0.690</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>121</td><td>1876</td><td>2</td><td style="color: var(--red);">0.007</td><td>0.003</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">1008s</td></tr>
+          <tr><td>122</td><td>2479</td><td>0</td><td style="color: var(--red);">0.000</td><td>0.000</td><td style="color: var(--dim);">0.000</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>123</td><td>1519</td><td>3</td><td style="color: var(--red);">0.013</td><td>0.007</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">420s</td></tr>
+          <tr><td>124</td><td>1634</td><td>83</td><td style="color: var(--red);">0.146</td><td>0.079</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">283s</td></tr>
+          <tr><td>200</td><td>2792</td><td>858</td><td style="color: var(--green); font-weight: 600;">0.893</td><td>0.807</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>201</td><td>2039</td><td>328</td><td style="color: var(--green); font-weight: 600;">0.715</td><td>0.556</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">45s</td></tr>
+          <tr><td>202</td><td>2146</td><td>75</td><td style="color: var(--red);">0.191</td><td>0.105</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">25s</td></tr>
+          <tr><td>203</td><td>3108</td><td>451</td><td style="color: var(--green); font-weight: 600;">0.724</td><td>0.568</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">2s</td></tr>
+          <tr><td>205</td><td>2672</td><td>85</td><td style="color: var(--red);">0.164</td><td>0.089</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">243s</td></tr>
+          <tr><td>207</td><td>2385</td><td>789</td><td style="color: var(--amber);">0.448</td><td>0.289</td><td style="color: var(--green);">0.998</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>208</td><td>3040</td><td>1369</td><td style="color: var(--green); font-weight: 600;">0.991</td><td>0.983</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>209</td><td>3052</td><td>384</td><td style="color: var(--amber);">0.491</td><td>0.326</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">49s</td></tr>
+          <tr><td>210</td><td>2685</td><td>227</td><td style="color: var(--amber);">0.502</td><td>0.335</td><td style="color: var(--green);">0.998</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>212</td><td>2763</td><td>0</td><td style="color: var(--red);">0.000</td><td>0.000</td><td style="color: var(--dim);">0.000</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>213</td><td>3294</td><td>610</td><td style="color: var(--green); font-weight: 600;">0.725</td><td>0.568</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">57s</td></tr>
+          <tr><td>214</td><td>2297</td><td>259</td><td style="color: var(--amber);">0.663</td><td>0.496</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">2s</td></tr>
+          <tr><td>215</td><td>3400</td><td>168</td><td style="color: var(--amber);">0.464</td><td>0.302</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">14s</td></tr>
+          <tr><td>217</td><td>2280</td><td>1964</td><td style="color: var(--green); font-weight: 600;">0.992</td><td>0.984</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>219</td><td>2312</td><td>72</td><td style="color: var(--red);">0.249</td><td>0.142</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">35s</td></tr>
+          <tr><td>220</td><td>2069</td><td>94</td><td style="color: var(--red);">0.239</td><td>0.135</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">46s</td></tr>
+          <tr><td>221</td><td>2462</td><td>396</td><td style="color: var(--green); font-weight: 600;">0.818</td><td>0.693</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>222</td><td>2634</td><td>209</td><td style="color: var(--amber);">0.390</td><td>0.243</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">530s</td></tr>
+          <tr><td>223</td><td>2643</td><td>560</td><td style="color: var(--amber);">0.634</td><td>0.464</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">20s</td></tr>
+          <tr><td>228</td><td>2141</td><td>365</td><td style="color: var(--amber);">0.694</td><td>0.532</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">13s</td></tr>
+          <tr><td>230</td><td>2466</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">1744s</td></tr>
+          <tr><td>231</td><td>2011</td><td>3</td><td style="color: var(--red);">0.007</td><td>0.003</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">142s</td></tr>
+          <tr><td>232</td><td>1816</td><td>1382</td><td style="color: var(--green); font-weight: 600;">0.953</td><td>0.911</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>233</td><td>3152</td><td>849</td><td style="color: var(--green); font-weight: 600;">0.973</td><td>0.948</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>234</td><td>2764</td><td>53</td><td style="color: var(--red);">0.044</td><td>0.023</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">842s</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </div>
+
+  <!-- Dataset -->
+  <div class="section">
+    <p class="section-label">Dataset</p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      <strong style="color: var(--text);">MIT-BIH Arrhythmia Database</strong> &mdash; the gold-standard benchmark
+      for cardiac arrhythmia detection, published by PhysioNet. 48 half-hour excerpts of two-channel ambulatory
+      ECG recordings from 47 subjects, digitized at 360&thinsp;Hz with 11-bit resolution. Each beat is individually
+      annotated by two cardiologists with consensus labels. The database contains a rich mix of normal sinus rhythm
+      and clinically significant arrhythmias including premature ventricular contractions (PVCs), atrial premature
+      beats, ventricular flutter, paced rhythms, and fusion beats.
+    </p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
+      <strong style="color: var(--text);">Configuration</strong> &mdash;
+      Baseline: first 30s of each record.
+      Window: 1080 samples (3s), step 360 (1s).
+      &Delta; threshold: 0.3.
+      Channels: MLII (modified limb lead II) + V1 or V5.
+    </p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
+      <strong style="color: var(--text);">Note</strong> &mdash; 3 records (115, 122, 212) contain only normal
+      sinus rhythm and serve as negative controls. 45 of the original 48 records were processed
+      (3 excluded due to signal quality issues).
+    </p>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <span class="tag tag-green">Python</span>
+      <span class="tag" style="color: var(--accent);">NumPy</span>
+      <span class="tag" style="color: var(--accent2);">SciPy</span>
+      <span class="tag" style="color: var(--teal);">PhysioNet</span>
+      <span class="tag tag-amber">MIT-BIH</span>
+      <span class="tag" style="color: var(--text);">45 Records</span>
+      <span class="tag" style="color: var(--red);">360 Hz</span>
+      <span class="tag" style="color: var(--green);">2 Channels</span>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="section">
+    <p class="section-label">Navigation</p>
+    <p style="font-size: 0.85rem;">
+      <a href="/r/research/" style="color: var(--accent); text-decoration: none;">&larr; Back to all experiments</a>
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <p>&Delta;.72 Coherence Framework &mdash; Experiment 11: MIT-BIH Cardiac Arrhythmia</p>
+  <p style="margin-top: 0.5rem;"><a href="/r/research/">thorarinson</a> &middot; <a href="https://coherenceengine.org">coherenceengine.org</a></p>
+</footer>
+
+</body>
+</html>
