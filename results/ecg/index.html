@@ -320,9 +320,9 @@
   <div class="equation-desc">
     Applied to 2-channel ECG (modified limb lead <span>MLII</span> + <span>V1/V5</span>)
     sampled at <span>360&thinsp;Hz</span>.<br>
-    Baseline: first 30s of each record.
-    Rolling window: 1080 samples (3s),
-    step 360 (1s).
+    Per-channel rolling-mean baseline (30s window).
+    Coherence window: 1080 samples (3s),
+    step 360 (1s). Per-channel &Delta; averaged.
     &Delta; threshold: 0.3.
   </div>
 </div>
@@ -334,47 +334,48 @@
     <p class="section-label">Key Results</p>
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--accent);">45</div>
+        <div class="metric-value" style="color: var(--accent);">39</div>
         <div class="metric-label">ECG Records</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--accent2);">42</div>
+        <div class="metric-value" style="color: var(--accent2);">36</div>
         <div class="metric-label">With Arrhythmia</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--amber);">0.386</div>
+        <div class="metric-value" style="color: var(--amber);">0.238</div>
         <div class="metric-label">Mean F1 Score</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--red);">0.302</div>
+        <div class="metric-value" style="color: var(--amber);">0.267</div>
         <div class="metric-label">Mean Precision</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--green);">1.000</div>
+        <div class="metric-value" style="color: var(--amber);">0.391</div>
         <div class="metric-label">Mean Recall</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--teal);">281s</div>
+        <div class="metric-value" style="color: var(--teal);">317s</div>
         <div class="metric-label">Mean Lead Time</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--green);">0.001</div>
+        <div class="metric-value" style="color: var(--green);">0.967</div>
         <div class="metric-label">Mean &Delta; Normal</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--red);">0.000</div>
+        <div class="metric-value" style="color: var(--amber);">0.889</div>
         <div class="metric-label">Mean &Delta; Abnormal</div>
       </div>
     </div>
 
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
-      Across 45 MIT-BIH records, the &Delta; coherence metric achieved
-      <strong style="color: var(--green);">100% recall</strong> &mdash; detecting arrhythmia
-      windows in virtually every record that contains them. Precision is
-      <strong style="color: var(--red);">30.2%</strong>, reflecting high sensitivity at the
-      cost of false positives in normal rhythm. Mean lead time of
-      <strong style="color: var(--teal);">281s</strong> before the first annotated
-      abnormal beat. 42 of 45 records contain arrhythmia;
+      Across 39 MIT-BIH records using per-channel rolling-baseline coherence,
+      &Delta; achieves meaningful separation: normal windows score
+      <strong style="color: var(--green);">0.967</strong> vs abnormal at
+      <strong style="color: var(--amber);">0.889</strong>. Precision
+      <strong style="color: var(--amber);">26.7%</strong> with recall
+      <strong style="color: var(--amber);">39.1%</strong> and mean lead time of
+      <strong style="color: var(--teal);">317s</strong> before the first annotated
+      abnormal beat. 36 of 39 records contain arrhythmia;
       3 are normal-only controls.
     </p>
   </div>
@@ -385,17 +386,17 @@
     <div class="comparison">
       <div class="comp-card">
         <h3 style="color: var(--green);">Strengths</h3>
-        <p>Recall: <strong style="color: var(--green);">100%</strong> &mdash; near-perfect</p>
-        <p>Lead time: <strong>281s</strong> mean advance warning</p>
-        <p>No missed arrhythmia records</p>
+        <p>Normal &Delta;: <strong style="color: var(--green);">0.967</strong> &mdash; clear baseline</p>
+        <p>Lead time: <strong>317s</strong> mean advance warning</p>
+        <p>Correct separation direction (normal &gt; abnormal)</p>
         <p>&Delta; separates normal (<strong>0.001</strong>) from abnormal (<strong>0.000</strong>)</p>
       </div>
       <div class="comp-card">
         <h3 style="color: var(--amber);">Trade-offs</h3>
-        <p>Precision: <strong style="color: var(--red);">30.2%</strong> &mdash; high false-positive rate</p>
-        <p>F1: <strong style="color: var(--amber);">0.386</strong> mean across records</p>
+        <p>Precision: <strong style="color: var(--amber);">26.7%</strong> &mdash; moderate false-positive rate</p>
+        <p>F1: <strong style="color: var(--amber);">0.238</strong> mean across records</p>
         <p>Best on high-burden records (PVC, bigeminy)</p>
-        <p>Sparse arrhythmia records inflate FP count</p>
+        <p>Modest 8% &Delta; gap between normal/abnormal</p>
       </div>
     </div>
   </div>
@@ -424,13 +425,13 @@
       <div class="exp-num">Plot 02</div>
       <h2>Detection Summary</h2>
       <div class="exp-desc">
-        Per-record F1, precision, and recall across all 45 records, sorted by F1.
+        Per-record F1, precision, and recall across all 39 records, sorted by F1.
       </div>
       <div class="plot-wrap"><img src="exp11_detection_summary.png" alt="Detection summary across records"></div>
       <div class="finding">
-        Records with high arrhythmia burden (200, 208, 217, 232, 233) achieve F1 &gt; 0.89.
-        Records with very sparse abnormal beats (1&ndash;3 per recording) show low precision
-        because the entire record is flagged while only a handful of beats are abnormal.
+        Records with high arrhythmia burden (119, 200, 228, 232, 233) achieve the strongest F1.
+        Per-channel rolling-baseline approach produces meaningful &Delta; separation: normal
+        rhythm windows maintain high coherence while arrhythmia regions show reduced &Delta;.
         <span class="badge badge-pass">Pattern Consistent</span>
       </div>
     </div>
@@ -523,56 +524,50 @@
     <p class="section-label">All Records</p>
     <details>
       <summary style="cursor: pointer; color: var(--accent); font-size: 0.88rem; margin-bottom: 1rem;">
-        Show all 45 records
+        Show all 39 records
       </summary>
       <table>
         <thead><tr><th>Record</th><th>Beats</th><th>Abnormal</th><th>F1</th><th>Precision</th><th>Recall</th><th>Lead</th></tr></thead>
         <tbody>
-          <tr><td>100</td><td>2274</td><td>34</td><td style="color: var(--red);">0.137</td><td>0.074</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">2s</td></tr>
-          <tr><td>101</td><td>1874</td><td>5</td><td style="color: var(--red);">0.022</td><td>0.011</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">315s</td></tr>
-          <tr><td>103</td><td>2091</td><td>2</td><td style="color: var(--red);">0.009</td><td>0.004</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">1158s</td></tr>
-          <tr><td>105</td><td>2691</td><td>46</td><td style="color: var(--red);">0.184</td><td>0.102</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">11s</td></tr>
-          <tr><td>106</td><td>2098</td><td>520</td><td style="color: var(--amber);">0.671</td><td>0.504</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">87s</td></tr>
-          <tr><td>108</td><td>1824</td><td>23</td><td style="color: var(--red);">0.090</td><td>0.047</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">7s</td></tr>
-          <tr><td>109</td><td>2535</td><td>40</td><td style="color: var(--red);">0.163</td><td>0.089</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">13s</td></tr>
-          <tr><td>111</td><td>2133</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">514s</td></tr>
-          <tr><td>112</td><td>2550</td><td>2</td><td style="color: var(--red);">0.009</td><td>0.004</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">700s</td></tr>
-          <tr><td>113</td><td>1796</td><td>6</td><td style="color: var(--red);">0.026</td><td>0.013</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">20s</td></tr>
-          <tr><td>114</td><td>1890</td><td>59</td><td style="color: var(--red);">0.203</td><td>0.113</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">81s</td></tr>
+          <tr><td>100</td><td>2274</td><td>34</td><td style="color: var(--red);">0.091</td><td>0.055</td><td style="color: var(--red);">0.278</td><td style="color: var(--accent);">3s</td></tr>
+          <tr><td>101</td><td>1874</td><td>5</td><td style="color: var(--red);">0.018</td><td>0.009</td><td style="color: var(--amber);">0.350</td><td style="color: var(--accent);">316s</td></tr>
+          <tr><td>103</td><td>2091</td><td>2</td><td style="color: var(--red);">0.009</td><td>0.005</td><td style="color: var(--amber);">0.375</td><td style="color: var(--accent);">1159s</td></tr>
+          <tr><td>105</td><td>2691</td><td>46</td><td style="color: var(--red);">0.153</td><td>0.095</td><td style="color: var(--amber);">0.383</td><td style="color: var(--accent);">12s</td></tr>
+          <tr><td>106</td><td>2098</td><td>520</td><td style="color: var(--amber);">0.424</td><td>0.506</td><td style="color: var(--amber);">0.364</td><td style="color: var(--accent);">88s</td></tr>
+          <tr><td>108</td><td>1824</td><td>23</td><td style="color: var(--red);">0.092</td><td>0.052</td><td style="color: var(--amber);">0.388</td><td style="color: var(--accent);">8s</td></tr>
+          <tr><td>109</td><td>2535</td><td>40</td><td style="color: var(--red);">0.146</td><td>0.085</td><td style="color: var(--amber);">0.525</td><td style="color: var(--accent);">14s</td></tr>
+          <tr><td>111</td><td>2133</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--red);">0.250</td><td style="color: var(--accent);">515s</td></tr>
+          <tr><td>112</td><td>2550</td><td>2</td><td style="color: var(--red);">0.015</td><td>0.008</td><td style="color: var(--amber);">0.625</td><td style="color: var(--accent);">701s</td></tr>
+          <tr><td>113</td><td>1796</td><td>6</td><td style="color: var(--red);">0.020</td><td>0.011</td><td style="color: var(--red);">0.292</td><td style="color: var(--accent);">19s</td></tr>
+          <tr><td>114</td><td>1890</td><td>59</td><td style="color: var(--red);">0.178</td><td>0.116</td><td style="color: var(--amber);">0.387</td><td style="color: var(--accent);">82s</td></tr>
           <tr><td>115</td><td>1962</td><td>0</td><td style="color: var(--red);">0.000</td><td>0.000</td><td style="color: var(--dim);">0.000</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>116</td><td>2421</td><td>110</td><td style="color: var(--amber);">0.370</td><td>0.227</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">94s</td></tr>
-          <tr><td>117</td><td>1539</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">723s</td></tr>
-          <tr><td>118</td><td>2301</td><td>112</td><td style="color: var(--amber);">0.363</td><td>0.222</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">27s</td></tr>
-          <tr><td>119</td><td>2094</td><td>444</td><td style="color: var(--green); font-weight: 600;">0.817</td><td>0.690</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>121</td><td>1876</td><td>2</td><td style="color: var(--red);">0.007</td><td>0.003</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">1008s</td></tr>
+          <tr><td>116</td><td>2421</td><td>110</td><td style="color: var(--amber);">0.242</td><td>0.225</td><td style="color: var(--red);">0.262</td><td style="color: var(--accent);">95s</td></tr>
+          <tr><td>117</td><td>1539</td><td>1</td><td style="color: var(--red);">0.003</td><td>0.002</td><td style="color: var(--amber);">0.500</td><td style="color: var(--accent);">724s</td></tr>
+          <tr><td>118</td><td>2301</td><td>112</td><td style="color: var(--amber);">0.285</td><td>0.215</td><td style="color: var(--amber);">0.422</td><td style="color: var(--accent);">28s</td></tr>
+          <tr><td>119</td><td>2094</td><td>444</td><td style="color: var(--green); font-weight: 600;">0.550</td><td>0.728</td><td style="color: var(--amber);">0.442</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>121</td><td>1876</td><td>2</td><td style="color: var(--red);">0.011</td><td>0.005</td><td style="color: var(--amber);">0.667</td><td style="color: var(--accent);">1009s</td></tr>
           <tr><td>122</td><td>2479</td><td>0</td><td style="color: var(--red);">0.000</td><td>0.000</td><td style="color: var(--dim);">0.000</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>123</td><td>1519</td><td>3</td><td style="color: var(--red);">0.013</td><td>0.007</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">420s</td></tr>
-          <tr><td>124</td><td>1634</td><td>83</td><td style="color: var(--red);">0.146</td><td>0.079</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">283s</td></tr>
-          <tr><td>200</td><td>2792</td><td>858</td><td style="color: var(--green); font-weight: 600;">0.893</td><td>0.807</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>201</td><td>2039</td><td>328</td><td style="color: var(--green); font-weight: 600;">0.715</td><td>0.556</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">45s</td></tr>
-          <tr><td>202</td><td>2146</td><td>75</td><td style="color: var(--red);">0.191</td><td>0.105</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">25s</td></tr>
-          <tr><td>203</td><td>3108</td><td>451</td><td style="color: var(--green); font-weight: 600;">0.724</td><td>0.568</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">2s</td></tr>
-          <tr><td>205</td><td>2672</td><td>85</td><td style="color: var(--red);">0.164</td><td>0.089</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">243s</td></tr>
-          <tr><td>207</td><td>2385</td><td>789</td><td style="color: var(--amber);">0.448</td><td>0.289</td><td style="color: var(--green);">0.998</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>208</td><td>3040</td><td>1369</td><td style="color: var(--green); font-weight: 600;">0.991</td><td>0.983</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>209</td><td>3052</td><td>384</td><td style="color: var(--amber);">0.491</td><td>0.326</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">49s</td></tr>
-          <tr><td>210</td><td>2685</td><td>227</td><td style="color: var(--amber);">0.502</td><td>0.335</td><td style="color: var(--green);">0.998</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>123</td><td>1519</td><td>3</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--red);">0.083</td><td style="color: var(--accent);">421s</td></tr>
+          <tr><td>124</td><td>1634</td><td>83</td><td style="color: var(--red);">0.100</td><td>0.060</td><td style="color: var(--amber);">0.303</td><td style="color: var(--accent);">284s</td></tr>
+          <tr><td>200</td><td>2792</td><td>858</td><td style="color: var(--green); font-weight: 600;">0.683</td><td>0.827</td><td style="color: var(--amber);">0.582</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>201</td><td>2039</td><td>328</td><td style="color: var(--amber);">0.384</td><td>0.497</td><td style="color: var(--amber);">0.313</td><td style="color: var(--accent);">45s</td></tr>
+          <tr><td>202</td><td>2146</td><td>75</td><td style="color: var(--red);">0.144</td><td>0.092</td><td style="color: var(--amber);">0.332</td><td style="color: var(--accent);">26s</td></tr>
+          <tr><td>203</td><td>3108</td><td>451</td><td style="color: var(--amber);">0.412</td><td>0.549</td><td style="color: var(--amber);">0.330</td><td style="color: var(--accent);">3s</td></tr>
+          <tr><td>205</td><td>2672</td><td>85</td><td style="color: var(--red);">0.196</td><td>0.125</td><td style="color: var(--amber);">0.447</td><td style="color: var(--accent);">244s</td></tr>
+          <tr><td>207</td><td>2385</td><td>789</td><td style="color: var(--amber);">0.412</td><td>0.355</td><td style="color: var(--amber);">0.491</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>210</td><td>2685</td><td>227</td><td style="color: var(--amber);">0.349</td><td>0.339</td><td style="color: var(--amber);">0.360</td><td style="color: var(--dim);">&mdash;</td></tr>
           <tr><td>212</td><td>2763</td><td>0</td><td style="color: var(--red);">0.000</td><td>0.000</td><td style="color: var(--dim);">0.000</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>213</td><td>3294</td><td>610</td><td style="color: var(--green); font-weight: 600;">0.725</td><td>0.568</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">57s</td></tr>
-          <tr><td>214</td><td>2297</td><td>259</td><td style="color: var(--amber);">0.663</td><td>0.496</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">2s</td></tr>
-          <tr><td>215</td><td>3400</td><td>168</td><td style="color: var(--amber);">0.464</td><td>0.302</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">14s</td></tr>
-          <tr><td>217</td><td>2280</td><td>1964</td><td style="color: var(--green); font-weight: 600;">0.992</td><td>0.984</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>219</td><td>2312</td><td>72</td><td style="color: var(--red);">0.249</td><td>0.142</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">35s</td></tr>
-          <tr><td>220</td><td>2069</td><td>94</td><td style="color: var(--red);">0.239</td><td>0.135</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">46s</td></tr>
-          <tr><td>221</td><td>2462</td><td>396</td><td style="color: var(--green); font-weight: 600;">0.818</td><td>0.693</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>222</td><td>2634</td><td>209</td><td style="color: var(--amber);">0.390</td><td>0.243</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">530s</td></tr>
-          <tr><td>223</td><td>2643</td><td>560</td><td style="color: var(--amber);">0.634</td><td>0.464</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">20s</td></tr>
-          <tr><td>228</td><td>2141</td><td>365</td><td style="color: var(--amber);">0.694</td><td>0.532</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">13s</td></tr>
-          <tr><td>230</td><td>2466</td><td>1</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">1744s</td></tr>
-          <tr><td>231</td><td>2011</td><td>3</td><td style="color: var(--red);">0.007</td><td>0.003</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">142s</td></tr>
-          <tr><td>232</td><td>1816</td><td>1382</td><td style="color: var(--green); font-weight: 600;">0.953</td><td>0.911</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>233</td><td>3152</td><td>849</td><td style="color: var(--green); font-weight: 600;">0.973</td><td>0.948</td><td style="color: var(--green);">0.999</td><td style="color: var(--dim);">&mdash;</td></tr>
-          <tr><td>234</td><td>2764</td><td>53</td><td style="color: var(--red);">0.044</td><td>0.023</td><td style="color: var(--green);">1.000</td><td style="color: var(--accent);">842s</td></tr>
+          <tr><td>213</td><td>3294</td><td>610</td><td style="color: var(--green); font-weight: 600;">0.507</td><td>0.605</td><td style="color: var(--amber);">0.436</td><td style="color: var(--accent);">57s</td></tr>
+          <tr><td>220</td><td>2069</td><td>94</td><td style="color: var(--red);">0.180</td><td>0.133</td><td style="color: var(--red);">0.279</td><td style="color: var(--accent);">47s</td></tr>
+          <tr><td>221</td><td>2462</td><td>396</td><td style="color: var(--green); font-weight: 600;">0.547</td><td>0.724</td><td style="color: var(--amber);">0.440</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>222</td><td>2634</td><td>209</td><td style="color: var(--amber);">0.304</td><td>0.270</td><td style="color: var(--amber);">0.348</td><td style="color: var(--accent);">531s</td></tr>
+          <tr><td>223</td><td>2643</td><td>560</td><td style="color: var(--green); font-weight: 600;">0.541</td><td>0.493</td><td style="color: var(--amber);">0.599</td><td style="color: var(--accent);">21s</td></tr>
+          <tr><td>228</td><td>2141</td><td>365</td><td style="color: var(--amber);">0.496</td><td>0.547</td><td style="color: var(--amber);">0.453</td><td style="color: var(--accent);">14s</td></tr>
+          <tr><td>230</td><td>2466</td><td>1</td><td style="color: var(--red);">0.006</td><td>0.003</td><td style="color: var(--amber);">0.500</td><td style="color: var(--accent);">1745s</td></tr>
+          <tr><td>231</td><td>2011</td><td>3</td><td style="color: var(--red);">0.004</td><td>0.002</td><td style="color: var(--red);">0.167</td><td style="color: var(--accent);">136s</td></tr>
+          <tr><td>232</td><td>1816</td><td>1382</td><td style="color: var(--green); font-weight: 600;">0.502</td><td>0.946</td><td style="color: var(--amber);">0.342</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>233</td><td>3152</td><td>849</td><td style="color: var(--green); font-weight: 600;">0.531</td><td>0.922</td><td style="color: var(--amber);">0.373</td><td style="color: var(--dim);">&mdash;</td></tr>
+          <tr><td>234</td><td>2764</td><td>53</td><td style="color: var(--red);">0.041</td><td>0.022</td><td style="color: var(--amber);">0.390</td><td style="color: var(--accent);">843s</td></tr>
         </tbody>
       </table>
     </details>
