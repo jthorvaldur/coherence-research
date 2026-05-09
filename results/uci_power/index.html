@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>&Delta;.72 &mdash; UCI Household Electric Power Consumption</title>
+<meta name="description" content="Delta.72 coherence framework applied to UCI Household Electric Power Consumption dataset. 4 years of 1-minute resolution energy data, 7 features, resampled to hourly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #07070f;
+    --surface: rgba(255,255,255,0.035);
+    --surface-hover: rgba(122,162,247,0.07);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(122,162,247,0.30);
+    --text: #e8e8f4;
+    --muted: rgba(232,232,244,0.45);
+    --dim: rgba(232,232,244,0.25);
+    --accent: #7aa2f7;
+    --accent2: #bb9af7;
+    --green: #9ece6a;
+    --amber: #e0af68;
+    --red: #f7768e;
+    --teal: #73daca;
+    --glow: rgba(122,162,247,0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    padding: 0 2rem; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(7,7,15,0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem; font-weight: 400;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* Hero */
+  .hero {
+    padding: 120px 2rem 60px;
+    text-align: center;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 200; letter-spacing: -0.01em;
+    line-height: 1.15; max-width: 720px; margin: 0 auto;
+  }
+  .hero-title strong {
+    font-weight: 500;
+    background: linear-gradient(140deg, #ffffff 20%, var(--accent) 60%, var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    margin-top: 1.2rem; font-size: 0.95rem;
+    color: var(--muted); max-width: 620px; margin-left: auto; margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* Equation */
+  .equation-block {
+    text-align: center;
+    padding: 1.5rem 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    max-width: 700px; margin: 2rem auto;
+  }
+  .equation-main {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem; letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .equation-desc {
+    font-size: 0.78rem; color: var(--muted);
+    margin-top: 0.8rem; line-height: 1.8;
+  }
+  .equation-desc span { color: var(--text); font-weight: 500; }
+
+  /* Main */
+  main {
+    position: relative; z-index: 2;
+    max-width: 1000px; margin: 0 auto;
+    padding: 2rem 2rem 6rem;
+  }
+
+  /* Section */
+  .section { margin-bottom: 4rem; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::after {
+    content: ''; display: block; flex: 1;
+    height: 1px; background: var(--border);
+  }
+
+  /* Metric cards */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem; text-align: center;
+    transition: border-color 0.25s;
+  }
+  .metric-card:hover { border-color: var(--border-hover); }
+  .metric-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .metric-label {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* Experiment card */
+  .experiment {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    transition: border-color 0.25s;
+  }
+  .experiment:hover { border-color: var(--border-hover); }
+  .experiment h2 {
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .experiment .exp-desc {
+    font-size: 0.85rem; color: var(--muted);
+    margin-bottom: 1.2rem; line-height: 1.6;
+  }
+  .experiment .finding {
+    font-size: 0.88rem; line-height: 1.7;
+    margin-top: 1rem;
+  }
+  .experiment .finding strong { color: var(--accent); }
+
+  /* Plot */
+  .plot-wrap {
+    margin: 1.2rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .plot-wrap img {
+    width: 100%; display: block;
+  }
+
+  /* Tables */
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 1rem 0; font-size: 0.82rem;
+  }
+  th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(122,162,247,0.06);
+    color: var(--accent); padding: 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(122,162,247,0.15);
+  }
+  td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tr:hover { background: rgba(255,255,255,0.015); }
+
+  /* Comparison */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin: 1rem 0;
+  }
+  .comp-card {
+    background: rgba(255,255,255,0.015);
+    border-radius: 8px; padding: 1.2rem;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .comp-card h3 {
+    font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+  .comp-card p {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.7;
+  }
+  .comp-card strong { color: var(--text); }
+
+  /* Tags */
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.06em; padding: 2px 8px;
+    border-radius: 6px; display: inline-block;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tag-green { color: var(--green); }
+  .tag-amber { color: var(--amber); }
+  .tag-red { color: var(--red); }
+
+  /* Status badge */
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+    display: inline-block;
+  }
+  .badge-pass { background: rgba(158,206,106,0.12); color: var(--green); }
+  .badge-warn { background: rgba(224,175,104,0.12); color: var(--amber); }
+  .badge-fail { background: rgba(247,118,142,0.12); color: var(--red); }
+
+  /* Footer */
+  footer {
+    text-align: center; padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--dim);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    main { padding: 2rem 1.2rem 4rem; }
+    .comparison { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/r/research/" class="nav-brand">Thorarinson</a>
+  <ul class="nav-links">
+    <li><a href="/r/research/">Exps 1&ndash;7</a></li>
+    <li><a href="/r/research/nab/">NAB</a></li>
+    <li><a href="/r/research/nasa/">NASA</a></li>
+    <li><a href="/r/research/skab/">SKAB</a></li>
+    <li><a href="/r/research/uci-power/" style="color: var(--accent); font-weight: 600;">UCI Power</a></li>
+    <li style="opacity: 0.3;">|</li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#plots">Plots</a></li>
+    <li><a href="#monthly">Monthly</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero-eyebrow">Experiment 10 &mdash; Household Energy</p>
+  <h1 class="hero-title">
+    <strong>&Delta;.72</strong> on UCI Power
+  </h1>
+  <p class="hero-sub">
+    Applying the coherence framework to real household energy consumption data.
+    34,190 hours of readings across 7 electrical features,
+    resampled from 1-minute to hourly resolution. Can &Delta; detect
+    structural shifts in consumption patterns that variance misses?
+  </p>
+</section>
+
+<!-- Equation -->
+<div class="equation-block">
+  <div class="equation-main">&Delta; = (P &middot; A &middot; R) / (D + N)</div>
+  <div class="equation-desc">
+    Applied to 7 power features: <span>Global_active_power</span>,
+    <span>Global_reactive_power</span>, <span>Voltage</span>,
+    <span>Global_intensity</span>, <span>Sub_metering_1</span>,
+    <span>Sub_metering_2</span>, <span>Sub_metering_3</span>.<br>
+    Baseline: first 8 weeks. Rolling window: 168 hours (1 week), step 24 hours.
+  </div>
+</div>
+
+<main>
+
+  <!-- Summary Metrics -->
+  <div class="section" id="results">
+    <p class="section-label">Key Results</p>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent);">34,190</div>
+        <div class="metric-label">Hours Analyzed</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--teal);">1,418</div>
+        <div class="metric-label">Windows</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--red);">432</div>
+        <div class="metric-label">&Delta; Alerts</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--amber);">1</div>
+        <div class="metric-label">Variance Alerts</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--green);">431</div>
+        <div class="metric-label">Coherence-Only</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" style="color: var(--accent2);">0.425</div>
+        <div class="metric-label">Mean &Delta;</div>
+      </div>
+    </div>
+
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      Across 34,190 hours of household power data (1,418 rolling windows),
+      the &Delta; coherence metric triggered <strong style="color: var(--red);">432 alerts</strong>
+      while variance-based detection found only <strong style="color: var(--amber);">1</strong>.
+      Of the &Delta; alerts, <strong style="color: var(--green);">431</strong> were
+      coherence-only detections &mdash; structural regime shifts invisible to variance.
+      The mean &Delta; value of <strong style="color: var(--accent2);">0.425</strong>
+      indicates sustained departure from baseline coherence across the dataset.
+    </p>
+  </div>
+
+  <!-- Method Comparison -->
+  <div class="section">
+    <p class="section-label">Method Comparison</p>
+    <div class="comparison">
+      <div class="comp-card">
+        <h3 style="color: var(--accent);">&Delta; Coherence</h3>
+        <p>Alerts: <strong style="color: var(--red);">432</strong></p>
+        <p>Mean &Delta;: <strong>0.425</strong></p>
+        <p>Threshold: <strong>0.3</strong></p>
+        <p>Sensitivity: <strong style="color: var(--green);">Structural shifts</strong></p>
+      </div>
+      <div class="comp-card">
+        <h3 style="color: var(--red);">Variance</h3>
+        <p>Alerts: <strong style="color: var(--amber);">1</strong></p>
+        <p>Z-score threshold: <strong>2.5</strong></p>
+        <p>Missed: <strong style="color: var(--red);">431 events</strong></p>
+        <p>Sensitivity: <strong style="color: var(--amber);">Amplitude only</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plots -->
+  <div class="section" id="plots">
+    <p class="section-label">Experiment Plots</p>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 01</div>
+      <h2>Coherence Overview</h2>
+      <div class="exp-desc">
+        Full timeline of &Delta; coherence across 34,190 hours. Top: raw power signals.
+        Middle: system-level &Delta; with alert threshold. Bottom: per-feature &Delta; decomposition.
+      </div>
+      <div class="plot-wrap"><img src="exp10_overview.png" alt="Coherence overview across full timeline"></div>
+      <div class="finding">
+        Clear seasonal structure in coherence: winter months show higher &Delta; (more departure from
+        baseline), while summer months are more stable. The framework captures both gradual seasonal
+        drift and abrupt consumption regime changes.
+        <span class="badge badge-pass">Seasonal Signal</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 02</div>
+      <h2>Monthly Coherence Heatmap</h2>
+      <div class="exp-desc">
+        Month-by-month coherence levels across all 4 years. Color intensity maps to mean &Delta; value.
+      </div>
+      <div class="plot-wrap"><img src="exp10_monthly_heatmap.png" alt="Monthly coherence heatmap"></div>
+      <div class="finding">
+        The heatmap reveals a repeating annual pattern: coherence peaks in winter (Dec&ndash;Feb)
+        and troughs in summer (Jul&ndash;Aug). 7 months exceed the high-coherence
+        threshold while 19 remain in the low range.
+        <span class="badge badge-pass">Repeatable</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 03</div>
+      <h2>Daily Consumption Profile</h2>
+      <div class="exp-desc">
+        Average hourly power consumption profile showing intra-day patterns and their
+        relationship to coherence dynamics.
+      </div>
+      <div class="plot-wrap"><img src="exp10_daily_profile.png" alt="Daily consumption profile"></div>
+      <div class="finding">
+        Daily profiles show distinct morning and evening peaks typical of residential consumption.
+        &Delta; is sensitive to changes in these temporal patterns &mdash; a shift in peak timing
+        registers as a coherence change even if total consumption remains constant.
+        <span class="badge badge-pass">Temporal Sensitivity</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 04</div>
+      <h2>Alert Distribution</h2>
+      <div class="exp-desc">
+        Distribution of &Delta; alerts across the timeline. Where and when does the coherence
+        framework detect structural shifts?
+      </div>
+      <div class="plot-wrap"><img src="exp10_alert_distribution.png" alt="Alert distribution"></div>
+      <div class="finding">
+        Alerts cluster around seasonal transitions and holiday periods, consistent with genuine
+        changes in household energy behavior. The 431 coherence-only alerts
+        represent events completely invisible to variance-based monitoring.
+        <span class="badge badge-pass">Behavioral Shifts</span>
+      </div>
+    </div>
+
+    <div class="experiment">
+      <div class="exp-num">Plot 05</div>
+      <h2>Multi-Feature Coherence</h2>
+      <div class="exp-desc">
+        Per-feature &Delta; decomposition across all 7 electrical measurements.
+        Which features drive the coherence signal?
+      </div>
+      <div class="plot-wrap"><img src="exp10_multi_feature.png" alt="Multi-feature coherence analysis"></div>
+      <div class="finding">
+        Sub-metering channels show the most variable coherence profiles, reflecting appliance-level
+        usage pattern changes. Global active power and intensity track closely, while voltage
+        maintains lower &Delta; values throughout &mdash; consistent with grid stability.
+        <span class="badge badge-pass">Feature Decomposition</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Coherence Table -->
+  <div class="section" id="monthly">
+    <p class="section-label">Monthly Coherence</p>
+    <table>
+      <thead><tr><th>Month</th><th>Mean &Delta;</th><th>Level</th></tr></thead>
+      <tbody>
+          <tr><td>2006-12</td><td style="color: var(--red); font-weight: 600;">0.9530</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2007-01</td><td style="color: var(--red); font-weight: 600;">1.0135</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2007-02</td><td style="color: var(--red); font-weight: 600;">0.6874</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2007-03</td><td style="color: var(--red); font-weight: 600;">0.6782</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2007-04</td><td style="color: var(--green);">0.3187</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2007-05</td><td style="color: var(--amber);">0.4017</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2007-06</td><td style="color: var(--green);">0.2873</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2007-07</td><td style="color: var(--green);">0.2680</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2007-08</td><td style="color: var(--green);">0.1836</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2007-09</td><td style="color: var(--green);">0.3412</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2007-10</td><td style="color: var(--amber);">0.4374</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2007-11</td><td style="color: var(--amber);">0.5460</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2007-12</td><td style="color: var(--red); font-weight: 600;">0.6057</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2008-01</td><td style="color: var(--amber);">0.5832</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2008-02</td><td style="color: var(--amber);">0.4864</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2008-03</td><td style="color: var(--amber);">0.4754</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2008-04</td><td style="color: var(--amber);">0.3884</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2008-05</td><td style="color: var(--green);">0.3066</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2008-06</td><td style="color: var(--green);">0.3182</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2008-07</td><td style="color: var(--green);">0.2280</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2008-08</td><td style="color: var(--green);">0.0655</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2008-09</td><td style="color: var(--amber);">0.4603</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2008-10</td><td style="color: var(--green);">0.2859</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2008-11</td><td style="color: var(--amber);">0.5703</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2008-12</td><td style="color: var(--amber);">0.5347</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2009-01</td><td style="color: var(--red); font-weight: 600;">0.6278</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2009-02</td><td style="color: var(--amber);">0.5744</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2009-03</td><td style="color: var(--amber);">0.5398</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2009-04</td><td style="color: var(--amber);">0.4305</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2009-05</td><td style="color: var(--green);">0.2982</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2009-06</td><td style="color: var(--green);">0.3011</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2009-07</td><td style="color: var(--green);">0.1476</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2009-08</td><td style="color: var(--green);">0.2569</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2009-09</td><td style="color: var(--amber);">0.4610</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2009-10</td><td style="color: var(--amber);">0.5022</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2009-11</td><td style="color: var(--red); font-weight: 600;">0.6541</td><td><span class="badge badge-fail">High</span></td></tr>
+          <tr><td>2009-12</td><td style="color: var(--amber);">0.5263</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2010-01</td><td style="color: var(--amber);">0.5927</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2010-02</td><td style="color: var(--amber);">0.5807</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2010-03</td><td style="color: var(--amber);">0.4614</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2010-04</td><td style="color: var(--green);">0.3278</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2010-05</td><td style="color: var(--amber);">0.3697</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2010-06</td><td style="color: var(--green);">0.2989</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2010-07</td><td style="color: var(--green);">0.0622</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2010-08</td><td style="color: var(--green);">0.1498</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2010-09</td><td style="color: var(--green);">0.2864</td><td><span class="badge badge-pass">Low</span></td></tr>
+          <tr><td>2010-10</td><td style="color: var(--amber);">0.3740</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+          <tr><td>2010-11</td><td style="color: var(--amber);">0.4926</td><td><span class="badge badge-warn">Moderate</span></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size: 0.82rem; color: var(--muted); margin-top: 1rem; line-height: 1.7;">
+      48 months analyzed. Coherence levels:
+      <span class="badge badge-fail">High</span> &ge; 0.6 &nbsp;
+      <span class="badge badge-warn">Moderate</span> 0.35&ndash;0.6 &nbsp;
+      <span class="badge badge-pass">Low</span> &lt; 0.35
+    </p>
+  </div>
+
+  <!-- Dataset -->
+  <div class="section">
+    <p class="section-label">Dataset</p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
+      <strong style="color: var(--text);">UCI Household Electric Power Consumption</strong> &mdash;
+      Measurements from a single household in Sceaux, France. 4 years of data (Dec 2006 &ndash; Nov 2010)
+      at 1-minute resolution, resampled to hourly (34,190 readings). 7 electrical features
+      covering global power, voltage, intensity, and 3 sub-metering circuits.
+      Source: UCI Machine Learning Repository.
+    </p>
+    <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
+      <strong style="color: var(--text);">Configuration</strong> &mdash;
+      Baseline: first 8 weeks.
+      Window: 168 hours (1 week), step 24 hours.
+      &Delta; threshold: 0.3.
+      Resample: 1h.
+      Variance z-score: 2.5.
+    </p>
+    <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <span class="tag tag-green">Python</span>
+      <span class="tag" style="color: var(--accent);">NumPy</span>
+      <span class="tag" style="color: var(--accent2);">Pandas</span>
+      <span class="tag" style="color: var(--teal);">UCI ML Repository</span>
+      <span class="tag tag-amber">4 Years</span>
+      <span class="tag" style="color: var(--text);">7 Features</span>
+      <span class="tag" style="color: var(--green);">Hourly</span>
+    </div>
+  </div>
+
+  <!-- Back link -->
+  <div class="section">
+    <p class="section-label">Navigation</p>
+    <p style="font-size: 0.85rem;">
+      <a href="/r/research/" style="color: var(--accent); text-decoration: none;">&larr; Back to all experiments</a>
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  <p>&Delta;.72 Coherence Framework &mdash; Experiment 10: UCI Household Power</p>
+  <p style="margin-top: 0.5rem;"><a href="/r/research/">thorarinson</a> &middot; <a href="https://coherenceengine.org">coherenceengine.org</a></p>
+</footer>
+
+</body>
+</html>

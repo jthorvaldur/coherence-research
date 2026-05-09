@@ -417,6 +417,7 @@ def generate_dashboard(results_dir: Path, output_path: Path):
     <li><a href="/r/research/nab/">NAB</a></li>
     <li><a href="/r/research/nasa/">NASA</a></li>
     <li><a href="/r/research/skab/">SKAB</a></li>
+    <li><a href="/r/research/uci-power/">UCI Power</a></li>
     <li style="opacity: 0.3;">|</li>
     <li><a href="#summary">Summary</a></li>
     <li><a href="#synthetic">Synthetic</a></li>
@@ -670,6 +671,12 @@ def generate_dashboard(results_dir: Path, output_path: Path):
         <div class="metric-card">
           <div class="metric-value" style="color: var(--accent2);">SKAB</div>
           <div class="metric-label">34 Experiments &middot; Industrial Valve Faults</div>
+        </div>
+      </a>
+      <a href="/r/research/uci-power/" style="text-decoration: none;">
+        <div class="metric-card">
+          <div class="metric-value" style="color: var(--teal);">UCI Power</div>
+          <div class="metric-label">4 Years &middot; Household Electricity</div>
         </div>
       </a>
     </div>

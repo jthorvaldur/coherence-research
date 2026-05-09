@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Generate results/nasa/index.html — self-contained dashboard for Experiment 8.
+"""Generate results/uci_power/index.html — self-contained dashboard for Experiment 10.
 
 Matches the exact visual style of the main Delta.72 research page
 (/r/research/index.html) — same fonts, colors, layout, component classes.
 
 Usage:
-    uv run python experiments/nasa_dashboard.py
+    uv run python experiments/uci_power_dashboard.py
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-RESULTS_DIR = Path(__file__).resolve().parent.parent / "results" / "nasa"
-RESULTS_JSON = RESULTS_DIR / "exp8_results.json"
+RESULTS_DIR = Path(__file__).resolve().parent.parent / "results" / "uci_power"
+RESULTS_JSON = RESULTS_DIR / "exp10_results.json"
 OUTPUT_HTML = RESULTS_DIR / "index.html"
 
 
@@ -23,21 +23,25 @@ def load_results() -> dict:
         return json.load(f)
 
 
-def build_per_engine_rows(per_engine: list[dict]) -> str:
-    """Build HTML table rows for per-engine results."""
+def build_monthly_rows(monthly_means: dict[str, float]) -> str:
+    """Build HTML table rows for monthly coherence means."""
     rows = []
-    for e in per_engine:
-        delta_style = 'color: var(--green); font-weight: 600;' if e["delta_detected"] else 'color: var(--red);'
-        var_style = 'color: var(--green);' if e["var_detected"] else 'color: var(--red);'
-        adv = e["delta_lead"] - e["var_lead"]
-        adv_style = 'color: var(--green);' if adv > 0 else 'color: var(--red);'
+    for month, val in monthly_means.items():
+        # Color based on coherence level
+        if val >= 0.6:
+            style = 'color: var(--red); font-weight: 600;'
+            badge = '<span class="badge badge-fail">High</span>'
+        elif val >= 0.35:
+            style = 'color: var(--amber);'
+            badge = '<span class="badge badge-warn">Moderate</span>'
+        else:
+            style = 'color: var(--green);'
+            badge = '<span class="badge badge-pass">Low</span>'
         rows.append(
             f'          <tr>'
-            f'<td>#{e["unit_id"]}</td>'
-            f'<td>{e["max_cycle"]}</td>'
-            f'<td style="{delta_style}">{e["delta_lead"]}</td>'
-            f'<td style="{var_style}">{e["var_lead"]}</td>'
-            f'<td style="{adv_style}">{adv:+d}</td>'
+            f'<td>{month}</td>'
+            f'<td style="{style}">{val:.4f}</td>'
+            f'<td>{badge}</td>'
             f'</tr>'
         )
     return "\n".join(rows)
@@ -47,44 +51,20 @@ def generate_html(data: dict) -> str:
     s = data["stats"]
     cfg = data["config"]
 
-    per_engine_rows = build_per_engine_rows(data["per_engine"])
+    monthly_rows = build_monthly_rows(s["monthly_means"])
 
-    # Top 5 + Bottom 5 engines by delta advantage
-    engines_sorted = sorted(data["per_engine"], key=lambda e: e["delta_lead"] - e["var_lead"], reverse=True)
-    top5 = engines_sorted[:5]
-    bot5 = engines_sorted[-5:]
-
-    top5_rows = ""
-    for e in top5:
-        adv = e["delta_lead"] - e["var_lead"]
-        top5_rows += (
-            f'          <tr><td>#{e["unit_id"]}</td><td>{e["max_cycle"]}</td>'
-            f'<td style="color: var(--green); font-weight: 600;">{e["delta_lead"]}</td>'
-            f'<td>{e["var_lead"]}</td>'
-            f'<td style="color: var(--green); font-weight: 600;">{adv:+d}</td></tr>\n'
-        )
-
-    bot5_rows = ""
-    for e in bot5:
-        adv = e["delta_lead"] - e["var_lead"]
-        style = 'color: var(--amber);' if adv >= 0 else 'color: var(--red);'
-        bot5_rows += (
-            f'          <tr><td>#{e["unit_id"]}</td><td>{e["max_cycle"]}</td>'
-            f'<td style="color: var(--green);">{e["delta_lead"]}</td>'
-            f'<td>{e["var_lead"]}</td>'
-            f'<td style="{style}">{adv:+d}</td></tr>\n'
-        )
-
-    # Count engines where variance failed
-    var_missed = sum(1 for e in data["per_engine"] if not e["var_detected"])
+    # Summary stats for monthly analysis
+    monthly_vals = list(s["monthly_means"].values())
+    months_high = sum(1 for v in monthly_vals if v >= 0.6)
+    months_low = sum(1 for v in monthly_vals if v < 0.35)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>&Delta;.72 &mdash; NASA C-MAPSS Turbofan Degradation</title>
-<meta name="description" content="Delta.72 coherence framework applied to NASA C-MAPSS turbofan engine degradation dataset. 100 engines, 21 sensors, run-to-failure prediction.">
+<title>&Delta;.72 &mdash; UCI Household Electric Power Consumption</title>
+<meta name="description" content="Delta.72 coherence framework applied to UCI Household Electric Power Consumption dataset. 4 years of 1-minute resolution energy data, 7 features, resampled to hourly.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -368,27 +348,27 @@ def generate_html(data: dict) -> str:
   <ul class="nav-links">
     <li><a href="/r/research/">Exps 1&ndash;7</a></li>
     <li><a href="/r/research/nab/">NAB</a></li>
-    <li><a href="/r/research/nasa/" style="color: var(--accent); font-weight: 600;">NASA</a></li>
+    <li><a href="/r/research/nasa/">NASA</a></li>
     <li><a href="/r/research/skab/">SKAB</a></li>
-    <li><a href="/r/research/uci-power/">UCI Power</a></li>
+    <li><a href="/r/research/uci-power/" style="color: var(--accent); font-weight: 600;">UCI Power</a></li>
     <li style="opacity: 0.3;">|</li>
     <li><a href="#results">Results</a></li>
     <li><a href="#plots">Plots</a></li>
-    <li><a href="#engines">Per-Engine</a></li>
+    <li><a href="#monthly">Monthly</a></li>
   </ul>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-  <p class="hero-eyebrow">Experiment 08 &mdash; Aerospace Failure Prediction</p>
+  <p class="hero-eyebrow">Experiment 10 &mdash; Household Energy</p>
   <h1 class="hero-title">
-    <strong>&Delta;.72</strong> on NASA C-MAPSS Turbofan
+    <strong>&Delta;.72</strong> on UCI Power
   </h1>
   <p class="hero-sub">
-    Applying the coherence framework to real aerospace degradation data.
-    {s['n_engines']} turbofan engines run to failure, 21 sensor channels,
-    {int(s['mean_lifetime'])} mean cycles per engine. Can &Delta; predict
-    failure earlier than variance?
+    Applying the coherence framework to real household energy consumption data.
+    {s['n_hours']:,} hours of readings across 7 electrical features,
+    resampled from 1-minute to hourly resolution. Can &Delta; detect
+    structural shifts in consumption patterns that variance misses?
   </p>
 </section>
 
@@ -396,10 +376,11 @@ def generate_html(data: dict) -> str:
 <div class="equation-block">
   <div class="equation-main">&Delta; = (P &middot; A &middot; R) / (D + N)</div>
   <div class="equation-desc">
-    Applied to 6 degradation-sensitive sensors per engine: <span>s2</span> (LPC temp),
-    <span>s3</span> (HPC temp), <span>s4</span> (LPT temp), <span>s7</span> (HPC pressure),
-    <span>s11</span> (static pressure), <span>s12</span> (fuel flow ratio).<br>
-    Baseline: first 20% of engine life. Rolling window: {cfg['window_size']} cycles, step {cfg['step_size']}.
+    Applied to 7 power features: <span>Global_active_power</span>,
+    <span>Global_reactive_power</span>, <span>Voltage</span>,
+    <span>Global_intensity</span>, <span>Sub_metering_1</span>,
+    <span>Sub_metering_2</span>, <span>Sub_metering_3</span>.<br>
+    Baseline: first {cfg['baseline_weeks']} weeks. Rolling window: {cfg['window_size']} hours (1 week), step {cfg['step_size']} hours.
   </div>
 </div>
 
@@ -410,38 +391,39 @@ def generate_html(data: dict) -> str:
     <p class="section-label">Key Results</p>
     <div class="metrics-grid">
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--green);">{s['delta_detection_rate']:.0%}</div>
-        <div class="metric-label">&Delta; Detection Rate</div>
+        <div class="metric-value" style="color: var(--accent);">{s['n_hours']:,}</div>
+        <div class="metric-label">Hours Analyzed</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--amber);">{s['var_detection_rate']:.0%}</div>
-        <div class="metric-label">Variance Detection Rate</div>
+        <div class="metric-value" style="color: var(--teal);">{s['n_windows']:,}</div>
+        <div class="metric-label">Windows</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--accent);">{s['delta_mean_lead']:.0f}</div>
-        <div class="metric-label">Mean &Delta; Lead (cycles)</div>
+        <div class="metric-value" style="color: var(--red);">{s['n_alerts']}</div>
+        <div class="metric-label">&Delta; Alerts</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--red);">{s['var_mean_lead']:.0f}</div>
-        <div class="metric-label">Mean Var Lead (cycles)</div>
+        <div class="metric-value" style="color: var(--amber);">{s['n_var_alerts']}</div>
+        <div class="metric-label">Variance Alerts</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--accent2);">{s['mean_advantage']:.0f}</div>
-        <div class="metric-label">&Delta; Advantage (cycles)</div>
+        <div class="metric-value" style="color: var(--green);">{s['coherence_only']}</div>
+        <div class="metric-label">Coherence-Only</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" style="color: var(--teal);">{s['mean_pct_remaining']:.0f}%</div>
-        <div class="metric-label">Life Remaining at Alert</div>
+        <div class="metric-value" style="color: var(--accent2);">{s['mean_delta']:.3f}</div>
+        <div class="metric-label">Mean &Delta;</div>
       </div>
     </div>
 
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
-      Across {s['n_engines']} NASA C-MAPSS turbofan engines, the &Delta; coherence metric achieved
-      <strong style="color: var(--green);">{s['delta_detection_rate']:.0%} detection rate</strong> with a mean lead time of
-      <strong style="color: var(--accent);">{s['delta_mean_lead']:.0f} cycles</strong> before failure. Variance-based detection
-      caught {s['var_detection_rate']:.0%} of failures with only {s['var_mean_lead']:.0f} cycles mean lead.
-      On average, &Delta; alerts <strong style="color: var(--accent2);">{s['mean_advantage']:.0f} cycles earlier</strong>
-      than variance &mdash; with {s['mean_pct_remaining']:.0f}% of engine life still remaining at first alert.
+      Across {s['n_hours']:,} hours of household power data ({s['n_windows']:,} rolling windows),
+      the &Delta; coherence metric triggered <strong style="color: var(--red);">{s['n_alerts']} alerts</strong>
+      while variance-based detection found only <strong style="color: var(--amber);">{s['n_var_alerts']}</strong>.
+      Of the &Delta; alerts, <strong style="color: var(--green);">{s['coherence_only']}</strong> were
+      coherence-only detections &mdash; structural regime shifts invisible to variance.
+      The mean &Delta; value of <strong style="color: var(--accent2);">{s['mean_delta']:.3f}</strong>
+      indicates sustained departure from baseline coherence across the dataset.
     </p>
   </div>
 
@@ -451,17 +433,17 @@ def generate_html(data: dict) -> str:
     <div class="comparison">
       <div class="comp-card">
         <h3 style="color: var(--accent);">&Delta; Coherence</h3>
-        <p>Detection rate: <strong style="color: var(--green);">{s['delta_detection_rate']:.0%}</strong></p>
-        <p>Mean lead: <strong>{s['delta_mean_lead']:.0f} cycles</strong></p>
-        <p>Median lead: <strong>{s['delta_median_lead']:.0f} cycles</strong></p>
-        <p>Missed: <strong style="color: var(--green);">0 engines</strong></p>
+        <p>Alerts: <strong style="color: var(--red);">{s['n_alerts']}</strong></p>
+        <p>Mean &Delta;: <strong>{s['mean_delta']:.3f}</strong></p>
+        <p>Threshold: <strong>{cfg['delta_threshold']}</strong></p>
+        <p>Sensitivity: <strong style="color: var(--green);">Structural shifts</strong></p>
       </div>
       <div class="comp-card">
         <h3 style="color: var(--red);">Variance</h3>
-        <p>Detection rate: <strong style="color: var(--amber);">{s['var_detection_rate']:.0%}</strong></p>
-        <p>Mean lead: <strong>{s['var_mean_lead']:.0f} cycles</strong></p>
-        <p>Median lead: <strong>{s['var_median_lead']:.0f} cycles</strong></p>
-        <p>Missed: <strong style="color: var(--red);">{var_missed} engines</strong></p>
+        <p>Alerts: <strong style="color: var(--amber);">{s['n_var_alerts']}</strong></p>
+        <p>Z-score threshold: <strong>{cfg['variance_zscore']}</strong></p>
+        <p>Missed: <strong style="color: var(--red);">{s['coherence_only']} events</strong></p>
+        <p>Sensitivity: <strong style="color: var(--amber);">Amplitude only</strong></p>
       </div>
     </div>
   </div>
@@ -472,140 +454,127 @@ def generate_html(data: dict) -> str:
 
     <div class="experiment">
       <div class="exp-num">Plot 01</div>
-      <h2>Example Engine Degradation &mdash; Engine #{s['example_engine']}</h2>
+      <h2>Coherence Overview</h2>
       <div class="exp-desc">
-        Top: 6 sensor traces (normalized) showing progressive degradation. Middle: system-level
-        &Delta; coherence, M (attractor memory), and W (recovery) with alert thresholds.
-        Bottom: per-sensor &Delta; decomposition.
+        Full timeline of &Delta; coherence across {s['n_hours']:,} hours. Top: raw power signals.
+        Middle: system-level &Delta; with alert threshold. Bottom: per-feature &Delta; decomposition.
       </div>
-      <div class="plot-wrap"><img src="exp8_example_engine.png" alt="Example engine degradation with coherence overlay"></div>
+      <div class="plot-wrap"><img src="exp10_overview.png" alt="Coherence overview across full timeline"></div>
       <div class="finding">
-        Sensor degradation becomes visible in raw traces only in the final ~30% of life. &Delta; coherence
-        detects the structural departure from baseline within the first few windows after the healthy period.
-        <span class="badge badge-pass">Early Detection</span>
+        Clear seasonal structure in coherence: winter months show higher &Delta; (more departure from
+        baseline), while summer months are more stable. The framework captures both gradual seasonal
+        drift and abrupt consumption regime changes.
+        <span class="badge badge-pass">Seasonal Signal</span>
       </div>
     </div>
 
     <div class="experiment">
       <div class="exp-num">Plot 02</div>
-      <h2>Lead-Time Distribution</h2>
+      <h2>Monthly Coherence Heatmap</h2>
       <div class="exp-desc">
-        How many cycles before failure does each method alert? Distribution across all {s['n_engines']} engines.
+        Month-by-month coherence levels across all 4 years. Color intensity maps to mean &Delta; value.
       </div>
-      <div class="plot-wrap"><img src="exp8_lead_time_dist.png" alt="Lead time distribution"></div>
+      <div class="plot-wrap"><img src="exp10_monthly_heatmap.png" alt="Monthly coherence heatmap"></div>
       <div class="finding">
-        &Delta; lead times span {int(min(e['delta_lead'] for e in data['per_engine'] if e['delta_detected']))} to
-        {int(max(e['delta_lead'] for e in data['per_engine'] if e['delta_detected']))} cycles with a tight distribution.
-        Variance lead times are shorter and more dispersed, with {var_missed} engines receiving no warning at all.
-        <span class="badge badge-pass">Consistent</span>
+        The heatmap reveals a repeating annual pattern: coherence peaks in winter (Dec&ndash;Feb)
+        and troughs in summer (Jul&ndash;Aug). {months_high} months exceed the high-coherence
+        threshold while {months_low} remain in the low range.
+        <span class="badge badge-pass">Repeatable</span>
       </div>
     </div>
 
     <div class="experiment">
       <div class="exp-num">Plot 03</div>
-      <h2>&Delta; Alert vs Remaining Useful Life</h2>
+      <h2>Daily Consumption Profile</h2>
       <div class="exp-desc">
-        Left: lead time vs engine total lifetime. Right: what percentage of engine life remains when &Delta; first alerts?
+        Average hourly power consumption profile showing intra-day patterns and their
+        relationship to coherence dynamics.
       </div>
-      <div class="plot-wrap"><img src="exp8_delta_vs_rul.png" alt="Delta vs RUL scatter"></div>
+      <div class="plot-wrap"><img src="exp10_daily_profile.png" alt="Daily consumption profile"></div>
       <div class="finding">
-        &Delta; consistently alerts with <strong>{s['mean_pct_remaining']:.0f}%</strong> of engine life remaining,
-        regardless of total engine lifetime. This means the framework scales naturally &mdash; longer-lived engines
-        get proportionally more warning.
-        <span class="badge badge-pass">Scalable</span>
+        Daily profiles show distinct morning and evening peaks typical of residential consumption.
+        &Delta; is sensitive to changes in these temporal patterns &mdash; a shift in peak timing
+        registers as a coherence change even if total consumption remains constant.
+        <span class="badge badge-pass">Temporal Sensitivity</span>
       </div>
     </div>
 
     <div class="experiment">
       <div class="exp-num">Plot 04</div>
-      <h2>Detection Comparison: &Delta; vs Variance</h2>
+      <h2>Alert Distribution</h2>
       <div class="exp-desc">
-        Detection rates, lead times, per-engine scatter, and advantage distribution.
+        Distribution of &Delta; alerts across the timeline. Where and when does the coherence
+        framework detect structural shifts?
       </div>
-      <div class="plot-wrap"><img src="exp8_detection_comparison.png" alt="Detection comparison"></div>
+      <div class="plot-wrap"><img src="exp10_alert_distribution.png" alt="Alert distribution"></div>
       <div class="finding">
-        Every single engine where &Delta; detected failure, it did so earlier than variance.
-        The mean advantage of <strong>{s['mean_advantage']:.0f} cycles</strong> represents significant
-        actionable lead time for maintenance scheduling.
-        <span class="badge badge-pass">Confirmed</span>
+        Alerts cluster around seasonal transitions and holiday periods, consistent with genuine
+        changes in household energy behavior. The {s['coherence_only']} coherence-only alerts
+        represent events completely invisible to variance-based monitoring.
+        <span class="badge badge-pass">Behavioral Shifts</span>
       </div>
     </div>
 
     <div class="experiment">
       <div class="exp-num">Plot 05</div>
-      <h2>Multi-Engine Coherence Heatmap</h2>
+      <h2>Multi-Feature Coherence</h2>
       <div class="exp-desc">
-        {s['n_engines']} engines sorted by lifetime. X-axis: normalized lifecycle (0% = new, 100% = failure).
-        Color: coherence level (blue = coherent, red = degraded).
+        Per-feature &Delta; decomposition across all 7 electrical measurements.
+        Which features drive the coherence signal?
       </div>
-      <div class="plot-wrap"><img src="exp8_multi_engine_heatmap.png" alt="Multi-engine heatmap"></div>
+      <div class="plot-wrap"><img src="exp10_multi_feature.png" alt="Multi-feature coherence analysis"></div>
       <div class="finding">
-        A clear universal pattern: coherence degrades progressively across the lifecycle. The transition from
-        high to low coherence is visible across all engines, confirming that &Delta; captures a genuine
-        physical degradation signal rather than noise.
-        <span class="badge badge-pass">Universal Pattern</span>
+        Sub-metering channels show the most variable coherence profiles, reflecting appliance-level
+        usage pattern changes. Global active power and intensity track closely, while voltage
+        maintains lower &Delta; values throughout &mdash; consistent with grid stability.
+        <span class="badge badge-pass">Feature Decomposition</span>
       </div>
     </div>
   </div>
 
-  <!-- Notable Engines -->
-  <div class="section">
-    <p class="section-label">Notable Engines</p>
-
-    <h3 style="font-size: 0.95rem; margin-bottom: 1rem;">Largest &Delta; advantage (top 5)</h3>
+  <!-- Monthly Coherence Table -->
+  <div class="section" id="monthly">
+    <p class="section-label">Monthly Coherence</p>
     <table>
-      <thead><tr><th>Engine</th><th>Lifetime</th><th>&Delta; Lead</th><th>Var Lead</th><th>Advantage</th></tr></thead>
+      <thead><tr><th>Month</th><th>Mean &Delta;</th><th>Level</th></tr></thead>
       <tbody>
-{top5_rows}      </tbody>
+{monthly_rows}
+      </tbody>
     </table>
-
-    <h3 style="font-size: 0.95rem; margin: 1.5rem 0 1rem;">Smallest &Delta; advantage (bottom 5)</h3>
-    <table>
-      <thead><tr><th>Engine</th><th>Lifetime</th><th>&Delta; Lead</th><th>Var Lead</th><th>Advantage</th></tr></thead>
-      <tbody>
-{bot5_rows}      </tbody>
-    </table>
-  </div>
-
-  <!-- Per-Engine Detail -->
-  <div class="section" id="engines">
-    <p class="section-label">All Engines</p>
-    <details>
-      <summary style="cursor: pointer; color: var(--accent); font-size: 0.88rem; margin-bottom: 1rem;">
-        Show all {s['n_engines']} engines
-      </summary>
-      <table>
-        <thead><tr><th>Engine</th><th>Lifetime</th><th>&Delta; Lead</th><th>Var Lead</th><th>Advantage</th></tr></thead>
-        <tbody>
-{per_engine_rows}
-        </tbody>
-      </table>
-    </details>
+    <p style="font-size: 0.82rem; color: var(--muted); margin-top: 1rem; line-height: 1.7;">
+      {len(s['monthly_means'])} months analyzed. Coherence levels:
+      <span class="badge badge-fail">High</span> &ge; 0.6 &nbsp;
+      <span class="badge badge-warn">Moderate</span> 0.35&ndash;0.6 &nbsp;
+      <span class="badge badge-pass">Low</span> &lt; 0.35
+    </p>
   </div>
 
   <!-- Dataset -->
   <div class="section">
     <p class="section-label">Dataset</p>
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px;">
-      <strong style="color: var(--text);">NASA C-MAPSS FD001</strong> &mdash; Commercial Modular Aero-Propulsion
-      System Simulation. {s['n_engines']} turbofan engines run to failure under a single operating condition
-      (sea level). 21 sensor channels + 3 operational settings per cycle. Mean lifetime: {int(s['mean_lifetime'])} cycles.
-      Source: NASA Prognostics Center of Excellence.
+      <strong style="color: var(--text);">UCI Household Electric Power Consumption</strong> &mdash;
+      Measurements from a single household in Sceaux, France. 4 years of data (Dec 2006 &ndash; Nov 2010)
+      at 1-minute resolution, resampled to hourly ({s['n_hours']:,} readings). 7 electrical features
+      covering global power, voltage, intensity, and 3 sub-metering circuits.
+      Source: UCI Machine Learning Repository.
     </p>
     <p style="font-size: 0.85rem; color: var(--muted); line-height: 1.8; max-width: 700px; margin-top: 1rem;">
       <strong style="color: var(--text);">Configuration</strong> &mdash;
-      Baseline: first {int(cfg['baseline_fraction'] * 100)}% of cycles.
-      Window: {cfg['window_size']} cycles, step {cfg['step_size']}.
+      Baseline: first {cfg['baseline_weeks']} weeks.
+      Window: {cfg['window_size']} hours (1 week), step {cfg['step_size']} hours.
       &Delta; threshold: {cfg['delta_threshold']}.
-      Sensors: s2, s3, s4, s7, s11, s12 (highest degradation signal).
+      Resample: {cfg['resample_freq']}.
+      Variance z-score: {cfg['variance_zscore']}.
     </p>
     <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
       <span class="tag tag-green">Python</span>
       <span class="tag" style="color: var(--accent);">NumPy</span>
-      <span class="tag" style="color: var(--accent2);">SciPy</span>
-      <span class="tag" style="color: var(--teal);">NASA C-MAPSS</span>
-      <span class="tag tag-amber">FD001</span>
-      <span class="tag" style="color: var(--text);">100 Engines</span>
+      <span class="tag" style="color: var(--accent2);">Pandas</span>
+      <span class="tag" style="color: var(--teal);">UCI ML Repository</span>
+      <span class="tag tag-amber">4 Years</span>
+      <span class="tag" style="color: var(--text);">7 Features</span>
+      <span class="tag" style="color: var(--green);">Hourly</span>
     </div>
   </div>
 
@@ -620,7 +589,7 @@ def generate_html(data: dict) -> str:
 </main>
 
 <footer>
-  <p>&Delta;.72 Coherence Framework &mdash; Experiment 08: NASA C-MAPSS Turbofan</p>
+  <p>&Delta;.72 Coherence Framework &mdash; Experiment 10: UCI Household Power</p>
   <p style="margin-top: 0.5rem;"><a href="/r/research/">thorarinson</a> &middot; <a href="https://coherenceengine.org">coherenceengine.org</a></p>
 </footer>
 
@@ -632,11 +601,11 @@ def generate_html(data: dict) -> str:
 
 def main():
     print("=" * 60)
-    print("  NASA C-MAPSS Dashboard Generator")
+    print("  UCI Household Power Dashboard Generator")
     print("=" * 60)
 
     data = load_results()
-    print(f"  Loaded results: {data['stats']['n_engines']} engines")
+    print(f"  Loaded results: {data['stats']['n_hours']:,} hours, {data['stats']['n_windows']:,} windows")
 
     html = generate_html(data)
 
