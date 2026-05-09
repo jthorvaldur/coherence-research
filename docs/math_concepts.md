@@ -27,11 +27,11 @@
 
 | # | Concept | What it adds | Replaces/Enhances | Priority |
 |---|---------|-------------|-------------------|----------|
-| 10 | **Persistent Homology (TDA)** | Topological Data Analysis — tracks "shape" of data as it evolves. Persistence diagrams show stable vs dying topological features. Applied to financial crash prediction, cardiac arrhythmia. | New operator: topological coherence | Medium |
-| 11 | **Transfer Entropy** | Directed information flow between time series. Detects whether instability propagates between systems (shared grid stress) vs independent failure. | Extends Δ from per-system to system-of-systems | Medium |
-| 12 | **Random Matrix Theory / Renormalization Group** | Eigenvalue spectrum analysis of system correlation matrices. Charles Martin's WeightWatcher applies RMT to neural nets — same math applies to multi-sensor coherence. RG predicts scaling laws and universality at phase transitions. If Δ threshold follows scaling laws → predictable from symmetry class, not tuned. | Theoretical depth: connects threshold behavior to universality classes in statistical physics | Medium |
-| 13 | **Phase Space Reconstruction (Takens' theorem)** | Embed time series in higher-dimensional space to reconstruct attractor. Healthy system = clean orbit, degrading = smeared attractor. | Formalizes M (Memory-of-Attractor) operator | Medium |
-| 14 | **Granger Causality** | Statistical test for whether one time series helps predict another. Multi-building: does coherence loss in building A predict loss in building B? | Causal structure discovery between systems | Medium |
+| 10 | **Persistent Homology (TDA)** | Topological Data Analysis — tracks "shape" of data as it evolves. Persistence diagrams show stable vs dying topological features. Applied to financial crash prediction, cardiac arrhythmia. | New operator: topological coherence | Queued |
+| 11 | **Transfer Entropy** | Directed information flow between time series. Detects whether instability propagates between systems (shared grid stress) vs independent failure. | Extends Δ from per-system to system-of-systems | **Done** — `src/delta72/transfer_entropy.py` |
+| 12 | **Random Matrix Theory / Renormalization Group** | Eigenvalue spectrum analysis of system correlation matrices. Charles Martin's WeightWatcher applies RMT to neural nets — same math applies to multi-sensor coherence. RG predicts scaling laws and universality at phase transitions. If Δ threshold follows scaling laws → predictable from symmetry class, not tuned. | Theoretical depth: connects threshold behavior to universality classes in statistical physics | **Done** — `src/delta72/rmt.py` |
+| 13 | **Phase Space Reconstruction (Takens' theorem)** | Embed time series in higher-dimensional space to reconstruct attractor. Healthy system = clean orbit, degrading = smeared attractor. | Formalizes M (Memory-of-Attractor) operator | **Done** — `src/delta72/phase_space.py` |
+| 14 | **Granger Causality** | Statistical test for whether one time series helps predict another. Multi-building: does coherence loss in building A predict loss in building B? | Causal structure discovery between systems | Queued |
 
 ### Tier 3 — Research Frontier
 

@@ -412,6 +412,7 @@ def generate_dashboard():
     <li><a href="/r/research/nasa/">NASA</a></li>
     <li><a href="/r/research/skab/">SKAB</a></li>
     <li><a href="/r/research/uci-power/">UCI Power</a></li>
+    <li><a href="/r/research/math/">Math</a></li>
     <li style="opacity: 0.3;">|</li>
     <li><a href="#results">Results</a></li>
     <li><a href="#categories">Categories</a></li>
