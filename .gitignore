@@ -16,3 +16,5 @@ data/nab/
 data/nab_labels/
 data/nasa_turbofan/
 data/physionet_ecg/
+data/credit_card/
+data/uci_power/

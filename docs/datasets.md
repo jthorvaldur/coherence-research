@@ -12,6 +12,7 @@
 | SKAB (Skoltech Anomaly) | Industrial | ~10 MB | Yes (labeled faults) | **Done** (Exp 9) | 97.1% detection, F1=0.429, 415 samples mean lead |
 | UCI Household Power | Energy | ~130 MB | No | **Done** (Exp 10) | 432 coherence alerts, only 1 variance alert, 431 coherence-only |
 | PhysioNet ECG (MIT-BIH) | Biomedical | ~100 MB | Yes (arrhythmia labels) | **Done** (Exp 11) | 45 records, F1=0.386, 100% recall, 42 arrhythmic records |
+| Credit Card Fraud | Financial | ~150 MB | Yes (fraud labels) | **Done** (Exp 12) | F1=0.557, 88.7% recall vs variance F1=0.003 |
 
 ## Queued
 
