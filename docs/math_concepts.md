@@ -37,11 +37,11 @@
 
 | # | Concept | What it adds | Notes | Priority |
 |---|---------|-------------|-------|----------|
-| 15 | **Koopman Operator Theory** | Lifts nonlinear dynamics to infinite-dimensional linear space. Spectral analysis of Koopman eigenfunctions = intrinsic system modes. Coherence = stability of Koopman spectrum. | Cutting-edge dynamical systems. Used in fluid dynamics, power grids. | Low |
-| 16 | **Information Geometry** | Measures distance between probability distributions on a Riemannian manifold. System state changes = geodesics on statistical manifold. Coherence loss = acceleration along geodesic. | Deep mathematical theory. Fisher information metric. | Low |
-| 17 | **Stochastic Resonance** | Noise can amplify weak signals in nonlinear systems. Relevant because Δ shows threshold behavior — there may be an optimal noise level where detection is enhanced. | Connects to the 72 threshold concept | Low |
-| 18 | **Ergodic Theory** | Studies long-term average behavior of dynamical systems. A coherent system is ergodic (time averages = ensemble averages). Loss of ergodicity = coherence breakdown. | Theoretical underpinning for why baselines work | Low |
-| 19 | **Synergetics (Haken)** | Order parameter theory for self-organizing systems. Δ is essentially an order parameter. Slaving principle: few order parameters govern many subsystems. | Connects directly to Allison's philosophical framework | Low |
+| 15 | **Koopman Operator Theory** | Lifts nonlinear dynamics to infinite-dimensional linear space. Spectral analysis of Koopman eigenfunctions = intrinsic system modes. Coherence = stability of Koopman spectrum. | Cutting-edge dynamical systems. Used in fluid dynamics, power grids. | **Done** — `src/delta72/koopman.py` |
+| 16 | **Information Geometry** | Measures distance between probability distributions on a Riemannian manifold. System state changes = geodesics on statistical manifold. Coherence loss = acceleration along geodesic. | Deep mathematical theory. Fisher information metric. | **Done** — `src/delta72/info_geometry.py` |
+| 17 | **Stochastic Resonance** | Noise can amplify weak signals in nonlinear systems. Relevant because Δ shows threshold behavior — there may be an optimal noise level where detection is enhanced. | Connects to the 72 threshold concept | Queued |
+| 18 | **Ergodic Theory** | Studies long-term average behavior of dynamical systems. A coherent system is ergodic (time averages = ensemble averages). Loss of ergodicity = coherence breakdown. | Theoretical underpinning for why baselines work | **Done** — `src/delta72/ergodic.py` |
+| 19 | **Synergetics (Haken)** | Order parameter theory for self-organizing systems. Δ is essentially an order parameter. Slaving principle: few order parameters govern many subsystems. | Connects directly to Allison's philosophical framework | Conceptual (no code needed) |
 
 ## Key References
 
